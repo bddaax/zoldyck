@@ -18,7 +18,7 @@ Experience Zoldyck in action by visiting our live application: [Explore Zoldyck 
 <br>
 <hr>
 
-# [Langkah-langkah Pengimplementasian]
+# Langkah-langkah Pengimplementasian
 ### 1. Membuat sebuah proyek Django baru
 
 Langkah pertama adalah inisialisasi proyek Django baru. Untuk memulai, jalankan perintah berikut di terminal atau command prompt:
