@@ -1,8 +1,28 @@
-<h1>Mental Health Tracker</h1>
+<!-- main/templates/main.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Zoldyck Detective Services</title>
+</head>
+<body>
+    <h1>Selamat datang di {{ app_name }}</h1>
+    <p>Aplikasi ini dibuat oleh {{ name }}.</p>
 
-<h5>NPM: </h5>
-<p>{{ npm }}<p>
-<h5>Name: </h5>
-<p>{{ name }}<p>
-<h5>Class: </h5>
-<p>{{ class }}<p>
+    <h2>Daftar Layanan Detektif Keluarga Zoldyck</h2>
+    <ul>
+        {% for service in services %}
+        <li>
+            <h3>{{ service.name }}</h3>
+            <p><strong>Layanan:</strong> {{ service.service }}</p>
+            <p><strong>Deskripsi:</strong> {{ service.description }}</p>
+            <p><strong>Pengalaman:</strong> {{ service.experience }}</p>
+            <p><strong>Harga:</strong> Rp {{ service.price }}</p>
+            <p><strong>Rating:</strong> {{ service.rating }} / 5</p>
+            <p><strong>Kategori:</strong> {{ service.category }}</p>
+            <p><strong>Stok:</strong> {{ service.stock }} layanan tersedia per bulan</p>
+            <p><strong>Pengalaman Tambahan:</strong> {{ service.additional_experience }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
