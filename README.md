@@ -161,6 +161,8 @@ Dengan mengikuti langkah-langkah di atas, kamu akan dapat mengimplementasikan da
 
 ### Buatlah bagan yang berisi request client ke web aplikasi berbasis Django beserta responnya dan jelaskan pada bagan tersebut kaitan antara urls.py, views.py, models.py, dan berkas html.
 
+![22](https://github.com/user-attachments/assets/e779464a-cb8b-4f1b-9399-8c7fe99fa195)
+
 Bagan alur request pada web aplikasi Django dimulai dari interaksi pengguna melalui browser, di mana client mengirimkan request HTTP ke server. Request ini bisa berupa berbagai jenis permintaan, seperti permintaan untuk mengakses halaman (GET) atau mengirim data (POST). Begitu request diterima oleh server, proses pengolahan dimulai di komponen **urls.py**. Pada tahap ini, Django menggunakan mekanisme routing untuk mencocokkan URL yang diminta dengan fungsi yang telah ditentukan dalam **views.py**. **URLs.py** berfungsi sebagai peta yang mengarahkan URL ke fungsi yang sesuai di views, memastikan bahwa setiap request dikirimkan ke bagian aplikasi yang benar untuk diproses lebih lanjut.
 
 Selanjutnya, setelah URLs.py memetakan permintaan ke views yang sesuai, request tersebut diproses oleh fungsi yang ada di **views.py**. Views berperan sebagai pusat logika aplikasi. Di sini, logika bisnis diterapkan untuk menangani permintaan dari client. Jika view tersebut membutuhkan data dari database, maka ia akan berinteraksi dengan **models.py**. **Models.py** di Django bertindak sebagai ORM (Object-Relational Mapping) yang memetakan data dalam database ke objek Python. Dengan model ini, views dapat mengambil data dari database atau menyimpan data baru ke dalamnya tanpa harus menggunakan query SQL secara langsung. Hal ini sangat memudahkan pengelolaan data karena pengembang cukup berurusan dengan kode Python, sementara ORM menangani komunikasi dengan database di belakang layar.
@@ -186,5 +188,4 @@ Model dalam Django disebut sebagai ORM (Object-Relational Mapping) karena ia men
 
 <br>
 <br>
-REV: Sat 07 Sep 2024 21:00
 <hr>
