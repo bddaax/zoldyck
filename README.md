@@ -11,7 +11,7 @@ Zoldyck is the ideal choice for those seeking not only reliable but also innovat
 
 ## Deployment
 
-Experience Zoldyck in action by visiting our live application: [Explore Zoldyck App](http://brenda-po-zoldyck.pbp.cs.ui.ac.id). Dive into the world of detective services and see how our app can assist you with your investigative needs.
+Experience Zoldyck in action by visiting our live application: [Explore Zoldyck App](http://brenda-po-zoldycks.pbp.cs.ui.ac.id). Dive into the world of detective services and see how our app can assist you with your investigative needs.
 
 <br>
 <br>
