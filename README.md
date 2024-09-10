@@ -161,7 +161,7 @@ Dengan mengikuti langkah-langkah di atas, kamu akan dapat mengimplementasikan da
 
 ### Buatlah bagan yang berisi request client ke web aplikasi berbasis Django beserta responnya dan jelaskan pada bagan tersebut kaitan antara urls.py, views.py, models.py, dan berkas html.
 
-![22](https://github.com/user-attachments/assets3d420562-98ea-4133-a715-3ad4bddca3bc)
+![22](https://github.com/user-attachments/assets/3d420562-98ea-4133-a715-3ad4bddca3bc)
 
 Bagan alur request pada web aplikasi Django dimulai dari interaksi pengguna melalui browser, di mana client mengirimkan request HTTP ke server. Request ini bisa berupa berbagai jenis permintaan, seperti permintaan untuk mengakses halaman (GET) atau mengirim data (POST). Begitu request diterima oleh server, proses pengolahan dimulai di komponen **urls.py**. Pada tahap ini, Django menggunakan mekanisme routing untuk mencocokkan URL yang diminta dengan fungsi yang telah ditentukan dalam **views.py**. **URLs.py** berfungsi sebagai peta yang mengarahkan URL ke fungsi yang sesuai di views, memastikan bahwa setiap request dikirimkan ke bagian aplikasi yang benar untuk diproses lebih lanjut.
 
