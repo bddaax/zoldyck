@@ -188,5 +188,4 @@ Model dalam Django disebut sebagai ORM (Object-Relational Mapping) karena ia men
 
 <br>
 <br>
-REV: Sat 07 Sep 2024 21:00
 <hr>
