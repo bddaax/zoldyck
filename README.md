@@ -23,7 +23,7 @@ Experience Zoldyck in action by visiting our live application: [Explore Zoldyck 
 Langkah pertama adalah inisialisasi proyek Django baru. Untuk memulai, jalankan perintah berikut di terminal atau command prompt:
 
 ```bash
-django-admin startproject nama_proyek
+django-admin startproject nama_proyek .
 ```
 
 Perintah ini akan membuat struktur direktori dasar yang dibutuhkan untuk proyek Django, termasuk folder proyek utama dan berkas konfigurasi penting seperti `manage.py`, `settings.py`, `urls.py`, dan `wsgi.py`. Struktur dasar ini akan membantu dalam pengaturan dan pengembangan aplikasi Django.
@@ -109,36 +109,47 @@ urlpatterns = [
 
 Dengan menambahkan `path('', views.home, name='home')`, URL root dari aplikasi `main` akan diarahkan ke fungsi `home`, memungkinkan pengguna mengakses halaman tersebut.
 
-### 7. Melakukan deployment ke PWS terhadap aplikasi yang sudah dibuat sehingga nantinya dapat diakses oleh teman-temanmu melalui Internet
+### 7. Melakukan Deployment ke PWS terhadap Aplikasi yang Sudah Dibuat
 
-Setelah aplikasi siap, langkah berikutnya adalah melakukan deployment ke Pacil Web Service (PWS). Proses ini melibatkan mengunggah proyek ke server PWS. Langkah-langkah umum meliputi:
+Setelah aplikasi Django selesai dikembangkan, langkah berikutnya adalah melakukan deployment ke server PWS agar aplikasi dapat diakses oleh publik melalui Internet. Berikut langkah-langkah untuk melakukan deployment:
 
-1. **Persiapkan berkas yang diperlukan**: Pastikan berkas `requirements.txt` berisi semua dependensi proyek dengan perintah:
+1. **Menambahkan URL Deployment pada ALLOWED_HOSTS**  
+   Pada proyek Django kamu, buka berkas `settings.py`, dan tambahkan URL deployment PWS ke dalam daftar `ALLOWED_HOSTS`. Format URL deployment adalah `<username-sso>-<nama-proyek>.pbp.cs.ui.ac.id`. Jika username kamu mengandung titik (.), gantilah titik tersebut dengan tanda hubung (-). Misalnya, jika username kamu adalah "pak.bepe24" dan nama proyek "mentalhealthtracker", maka URL deployment menjadi `pak-bepe24-mentalhealthtracker.pbp.cs.ui.ac.id`. Tambahkan URL tersebut ke dalam `ALLOWED_HOSTS` seperti contoh berikut:
+   ```python
+   ALLOWED_HOSTS = ["localhost", "127.0.0.1", "<URL deployment PWS kamu>"]
+   ```
+   Simpan perubahan ini dan lakukan `git add`, `git commit`, dan `git push` ke repositori GitHub kamu.
+
+2. **Menjalankan Perintah Project Command**  
+   Setelah perubahan sudah dipush ke GitHub, kembali ke halaman PWS dan jalankan perintah yang terdapat di bagian *Project Command* untuk melakukan deployment. Saat menjalankan perintah ini, akan muncul prompt yang meminta *username* dan *password*. Masukkan *credentials* yang kamu simpan sebelumnya.
+
+3. **Mengubah Nama Branch ke Main**  
+   Pastikan nama branch utamamu adalah `main` dengan menjalankan perintah berikut:
    ```bash
-   pip freeze > requirements.txt
+   git branch -M main
    ```
-2. **Buat berkas `Procfile`** di direktori utama proyek dengan konten:
-   ```text
-   web: gunicorn nama_proyek.wsgi
+
+4. **Memeriksa Status Deployment**  
+   Kembali ke halaman PWS dan pilih proyek yang baru saja kamu buat. Kamu akan melihat status deployment di halaman proyek. Jika statusnya "Building", artinya aplikasi masih dalam proses deployment. Jika statusnya "Running", aplikasi sudah berhasil dideploy dan dapat diakses di URL deployment. Kamu bisa menekan tombol "View Project" untuk mengakses aplikasi.
+
+5. **Mengatasi Masalah HTTPS**  
+   URL PWS hanya bisa diakses melalui protokol HTTP. Jika URL kamu secara otomatis menggunakan HTTPS, ubah secara manual menjadi HTTP. Jika masih mengalami masalah, coba akses URL deployment dalam *incognito mode*.
+
+6. **Mengirim Perubahan ke PWS**  
+   Jika ada perubahan pada proyek yang ingin kamu terapkan di PWS, cukup lakukan perintah `git push` sebagai berikut:
+   ```bash
+   git push pws main:master
    ```
-3. **Ikuti panduan PWS** untuk mengunggah dan mengonfigurasi proyek, yang biasanya mencakup pembuatan aplikasi baru di PWS dan pengaturan konfigurasi.
+   Tidak perlu menjalankan kembali perintah *Project Command*. Cukup lakukan `add`, `commit`, dan `push` untuk memperbarui deployment.
+
+Dengan mengikuti langkah-langkah ini, aplikasi Django kamu dapat diakses secara online melalui Pacil Web Service (PWS). 
+
+Ps : Pastikan juga untuk selalu melakukan push ke GitHub dan PWS apabila terdapat perubahan, agar tidak mengalami error (seperti saya :<)
 
 ### 8. Membuat sebuah `README.md` yang berisi tautan menuju aplikasi PWS yang sudah di-deploy
 
-Terakhir, buat berkas `README.md` di direktori proyek. Berisi deskripsi proyek, langkah-langkah implementasi, serta tautan menuju aplikasi yang sudah di-deploy. Format berkas `README.md` sebagai berikut:
+Terakhir, buat berkas `README.md` di direktori proyek. Berisi deskripsi proyek, langkah-langkah implementasi, serta tautan menuju aplikasi yang sudah di-deploy. 
 
-```markdown
-# Zoldyck: Platform-Based Programming Project
-
-## Deskripsi Proyek
-Zoldyck adalah aplikasi inovatif yang menawarkan berbagai layanan detektif. Aplikasi ini dirancang untuk membantu pengguna menemukan solusi untuk berbagai masalah investigasi.
-
-## Langkah Pengimplementasian
-Langkah-langkah rinci untuk pengaturan dan deployment proyek dapat ditemukan di atas.
-
-## Deployment
-Akses versi live dari aplikasi di sini: [Zoldyck App](http://brenda-po-zoldyck.pbp.cs.ui.ac.id).
-```
 
 Dengan mengikuti langkah-langkah di atas, kamu akan dapat mengimplementasikan dan mendokumentasikan proyek Django dengan detail yang diperlukan.
 
