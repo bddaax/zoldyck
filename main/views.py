@@ -104,7 +104,7 @@ def show_model(request):
         'npm': '2306152304',
         'app_name': 'Zoldyck Detective Services',
         'services': example_services,
-        'products': model,  # Model Product ditampilkan juga jika diperlukan
+        'products': model, 
     }
 
     return render(request, 'main.html', context)
