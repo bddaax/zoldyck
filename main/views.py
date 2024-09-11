@@ -99,6 +99,9 @@ def show_model(request):
 
     context = {
         'name': name,
+        'nama_saya': 'Brenda Po Lok Fahida',
+        'kelas': 'PBP D',
+        'npm': '2306152304',
         'app_name': 'Zoldyck Detective Services',
         'services': example_services,
         'products': model,  # Model Product ditampilkan juga jika diperlukan
