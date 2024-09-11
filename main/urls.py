@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import show_model, welcome
+from .views import index, home
 
-app_name = 'main'
+app_name = 'main'  
 
 urlpatterns = [
-    path('', welcome, name='welcome'),
-    path('main/', show_model, name='show_model'),
+    path('', index, name='index'),  # URL untuk halaman depan
+    path('home/', home, name='home'),  # URL untuk halaman utama
 ]
