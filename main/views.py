@@ -1,8 +1,19 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Product
 
 # Create your views here.
+def welcome(request):
+    if request.method == 'POST':
+        # Simpan nama ke dalam session dari input di halaman welcome
+        request.session['name'] = request.POST.get('name')
+        return redirect('main:show_model')
+    return render(request, 'welcome.html')
+
 def show_model(request):
+    # Ambil nama dari session
+    name = request.session.get('name', 'Guest')
+
+    # Query dari database untuk model Product
     model = Product.objects.all()
 
     # Data lengkap layanan detektif keluarga Zoldyck
@@ -87,9 +98,10 @@ def show_model(request):
     ]
 
     context = {
-        'name': 'Brenda',
+        'name': name,
         'app_name': 'Zoldyck Detective Services',
         'services': example_services,
+        'products': model,  # Model Product ditampilkan juga jika diperlukan
     }
 
     return render(request, 'main.html', context)
