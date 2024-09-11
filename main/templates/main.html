@@ -1,91 +1,42 @@
-<!-- main/templates/main.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Zoldyck Detective Services</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            padding: 20px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .header h2 {
-            margin: 0;
-        }
-        .header .logout-btn {
-            background-color: #ff4d4d;
-            padding: 10px;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .app-description {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .services-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-        .service-box {
-            background-color: white;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        .service-box h3 {
-            margin-bottom: 10px;
-        }
-        .service-box img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        .details-btn {
-            background-color: #007BFF;
-            color: white;
-            padding: 10px;
-            text-decoration: none;
-            border-radius: 5px;
-            display: inline-block;
-            margin-top: 10px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }}</title>
 </head>
-<body>
-
-    <div class="header">
-        <h2>Hi, {{ name }}</h2>
-        <a href="{% url 'main:welcome' %}" class="logout-btn">Keluar</a>
-    </div>
-
-    <div class="app-description">
-        <h1>Zoldyck</h1>
-        <p>Zoldyck is an advanced application that connects you with premium detective services, offering solutions tailored to your needs.</p>
-    </div>
-
-    <div class="services-container">
-        {% for service in services %}
-        <div class="service-box">
-            <h3>{{ service.name }}</h3>
-            <img src="{% static 'images/default_service.jpg' %}" alt="Service Image">
-            <p>{{ service.description }}</p>
-            <a href="#" class="details-btn">Details</a>
+<body style="text-align: center;">
+    <header>
+        <div style="position: absolute; top: 10px; left: 10px;">
+            <h3>Hi, {{ name }}!</h3>
         </div>
-        {% endfor %}
-    </div>
+        <div style="position: absolute; top: 10px; right: 10px;">
+            <a href="{% url 'main:index' %}"><button>Keluar</button></a>
+        </div>
+    </header>
 
+    <h1>Zoldyck</h1>
+    <p>
+        Zoldyck is an advanced application that connects you with premium detective services. Our expert team provides solutions from in-depth investigations to rapid case resolutions and strategic sabotage, all crafted to solve mysteries with high efficiency.
+    </p>
+
+    <section>
+        <h2>Daftar Layanan Detektif Keluarga Zoldyck</h2>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+            {% for service in services %}
+            <div style="border: 1px solid #000; padding: 10px; margin: 10px; width: 200px;">
+                <h3>{{ service.name }}</h3>
+                <p>{{ service.description }}</p>
+                <button onclick="showDetails('{{ service.name }}', '{{ service.service }}', '{{ service.experience }}', '{{ service.price }}', '{{ service.rating }}', '{{ service.category }}', '{{ service.stock }}', '{{ service.additional_experience }}')">Details</button>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <script>
+        function showDetails(name, service, experience, price, rating, category, stock, additional_experience) {
+            alert(`Name: ${name}\nService: ${service}\nExperience: ${experience}\nPrice: Rp ${price}\nRating: ${rating} / 5\nCategory: ${category}\nStock: ${stock} services available per month\nAdditional Experience: ${additional_experience}`);
+        }
+    </script>
 </body>
 </html>
