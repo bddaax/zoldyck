@@ -1,41 +1,185 @@
+{% extends 'base.html' %}
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ app_name }}</title>
+    <title>Zoldyck Detective Services</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #f0f4ff, #d9e6ff);
+            text-align: center;
+            overflow-x: hidden;
+        }
+        header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 16px;
+        }
+        h1 {
+            font-size: 48px;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0;
+        }
+        p {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 40px;
+        }
+        .btn-primary {
+            padding: 12px 30px;
+            background-color: #000;
+            color: white;
+            border-radius: 8px;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+            text-decoration: none; /* Remove underline */
+        }
+        .btn-primary:hover {
+            background-color: #333;
+        }
+
+        /* Carousel styles */
+        .carousel-container {
+            width: 90%; /* Lebar container 90% untuk memastikan item tidak terpotong */
+            max-width: 600px; /* Set max width for better display */
+            overflow: hidden;
+            margin: 40px auto; /* Center container horizontally */
+            position: relative;
+            box-sizing: border-box; /* Ensure padding and border are included in width */
+        }
+        .carousel {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .service-item {
+            min-width: 100%; /* Buat item memenuhi seluruh container */
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center; /* Center text in the container */
+            margin: 0; /* Remove margin for seamless transition */
+            box-sizing: border-box; /* Ensure padding and border are included in width */
+        }
+        .btn-details {
+            display: block; /* Ensure button behaves like a block element */
+            margin: 20px auto; /* Center button horizontally */
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .btn-details:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px; /* Sama dengan container */
+            transform: translateY(-50%);
+            box-sizing: border-box; /* Ensure padding and border are included in width */
+        }
+        .nav-buttons button {
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .nav-buttons button:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+    </style>
 </head>
-<body style="text-align: center;">
+<body>
     <header>
-        <div style="position: absolute; top: 10px; left: 10px;">
-            <h3>Hi, {{ name }}!</h3>
-        </div>
+        <h3>Hi, {{ name }}!</h3>
     </header>
 
-    <h1>Zoldyck</h1>
-    <p>
-        Zoldyck is an advanced application that connects you with premium detective services. Our expert team provides solutions from in-depth investigations to rapid case resolutions and strategic sabotage, all crafted to solve mysteries with high efficiency.
-    </p>
-    <h1> (╭ರ_•́)</h1>
-    <p>made by {{ nama_saya }} - {{ npm }} dari kelas {{ kelas }}</p>
+    <h1>Zoldyck Detective Services</h1>
+    <p>Unlock the mysteries with the world-class detectives of the Zoldyck family.</p>
     
-    <section>
-        <h2>Daftar Layanan Detektif Keluarga Zoldyck</h2>
-        <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+    <a class="btn-primary" href="{% url 'main:create_product_form' %}">Add a New Product</a>
+    
+    <div class="carousel-container">
+        <div class="carousel" id="serviceCarousel">
             {% for service in services %}
-            <div style="border: 1px solid #000; padding: 10px; margin: 10px; width: 200px;">
+            <div class="service-item">
                 <h3>{{ service.name }}</h3>
                 <p>{{ service.description }}</p>
-                <button onclick="showDetails('{{ service.name }}', '{{ service.service }}', '{{ service.experience }}', '{{ service.price }}', '{{ service.rating }}', '{{ service.category }}', '{{ service.stock }}', '{{ service.additional_experience }}')">Details</button>
+                <button class="btn-details" onclick="showDetails('{{ service.name }}', '{{ service.service }}', '{{ service.experience }}', '{{ service.price }}', '{{ service.rating }}', '{{ service.category }}', '{{ service.stock }}', '{{ service.additional_experience }}')">Details</button>
             </div>
             {% endfor %}
         </div>
-    </section>
+    </div>
+
+    <div class="nav-buttons">
+        <button onclick="moveCarousel(-1)">‹</button>
+        <button onclick="moveCarousel(1)">›</button>
+    </div>
+
+    <p>Made by {{ nama_saya }} - {{ npm }} from class {{ kelas }}</p>
+
+    <footer>
+        © Zoldyck Detective Services - All Rights Reserved
+    </footer>
 
     <script>
+        let currentIndex = 0;
+
+        function moveCarousel(direction) {
+            const carousel = document.getElementById('serviceCarousel');
+            const totalItems = document.querySelectorAll('.service-item').length;
+            const itemWidth = document.querySelector('.carousel-container').offsetWidth; // Ambil lebar container
+
+            currentIndex += direction;
+            if (currentIndex < 0) {
+                currentIndex = totalItems - 1; // Kembali ke item terakhir jika geser mundur
+            } else if (currentIndex >= totalItems) {
+                currentIndex = 0; // Kembali ke item pertama jika geser maju
+            }
+
+            const offset = -currentIndex * itemWidth;
+            carousel.style.transform = `translateX(${offset}px)`;
+        }
+
         function showDetails(name, service, experience, price, rating, category, stock, additional_experience) {
             alert(`Name: ${name}\nService: ${service}\nExperience: ${experience}\nPrice: Rp ${price}\nRating: ${rating} / 5\nCategory: ${category}\nStock: ${stock} services available per month\nAdditional Experience: ${additional_experience}`);
         }
     </script>
 </body>
 </html>
+{% endblock content %}
