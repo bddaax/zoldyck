@@ -256,12 +256,17 @@ Menambahkan `csrf_token` ke form Django membantu memastikan bahwa permintaan yan
 ### 4. Mengakses keempat URL dalam format XML, JSON, XML by ID, dan JSON by ID menggunakan Postman
 
 #### URL dalam format XML
+<img width="1440" alt="Screenshot 2024-09-18 at 10 56 27" src="https://github.com/user-attachments/assets/10b8a7ef-aebd-471e-9f5c-5fd9c5c79c17">
 
 #### URL dalam format JSON
+<img width="1440" alt="Screenshot 2024-09-18 at 10 56 37" src="https://github.com/user-attachments/assets/aacd6f5d-69d5-4e94-8bd9-264adb34f0b6">
 
 #### URL dalam format XML by ID
+<img width="1440" alt="Screenshot 2024-09-18 at 11 00 27" src="https://github.com/user-attachments/assets/f446b548-f4ed-43ff-84ce-4e393d228b88">
+
 
 #### URL dalam format JSON by ID
+<img width="1440" alt="Screenshot 2024-09-18 at 11 00 18" src="https://github.com/user-attachments/assets/b3628fb5-4e42-4518-a2e9-9b6876c652e8">
 
 
 <br>
