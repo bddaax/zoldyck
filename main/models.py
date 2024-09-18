@@ -15,12 +15,8 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-class MoodEntry(models.Model):
+class ProductEntry(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    mood = models.CharField(max_length=255)
-    time = models.DateTimeField()
-    feelings = models.TextField()
-    mood_intensity = models.IntegerField()
 
     @property
     def is_mood_strong(self):
