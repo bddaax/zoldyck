@@ -19,7 +19,7 @@ Experience Zoldyck in action by visiting our live application: [Explore Zoldyck 
 
 # Tugas 3
 
-# Langkah-langkah Pengimplementasian
+## Langkah-langkah Pengimplementasian
 ### 1. Persiapan dan langkah awal sebelum mengerjakan Tugas 3
 
 Langkah pertama adalah membuat file `base.html` dalam direktori `templates`. Untuk memulai, jalankan perintah berikut di terminal atau command prompt:
@@ -259,7 +259,7 @@ Menambahkan `csrf_token` ke form Django membantu memastikan bahwa permintaan yan
 
 # Tugas 2 
 
-# Langkah-langkah Pengimplementasian
+## Langkah-langkah Pengimplementasian
 ### 1. Membuat sebuah proyek Django baru
 
 Langkah pertama adalah inisialisasi proyek Django baru. Untuk memulai, jalankan perintah berikut di terminal atau command prompt:
