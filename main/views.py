@@ -9,7 +9,9 @@ from django.core import serializers
 def welcome(request):
     if request.method == 'POST':
         # Simpan nama ke dalam session dari input di halaman welcome
+        request.session['name'] = request.POST.get('name')
         return redirect('main:show_model')
+    return redirect('main:show_model')
 
 def show_model(request):
     # Ambil nama dari session
