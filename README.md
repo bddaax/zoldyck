@@ -17,7 +17,194 @@ Experience Zoldyck in action by visiting our live application: [Explore Zoldyck 
 <br>
 <hr>
 
-Berikut penjelasan mengenai pertanyaan-pertanyaanmu:
+# Tugas 3
+
+# Langkah-langkah Pengimplementasian
+### 1. Persiapan dan langkah awal sebelum mengerjakan Tugas 3
+
+Langkah pertama adalah membuat file `base.html` dalam direktori `templates`. Untuk memulai, jalankan perintah berikut di terminal atau command prompt:
+
+```bash
+touch base.html
+vi base.html
+```
+
+Perintah ini akan membuat dan membuka file `base.html`, lalu kita dapat mengisi file `base.html` dengan kode berikut
+
+```pyhon
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% block meta %} {% endblock meta %}
+  </head>
+
+  <body>
+    {% block content %} {% endblock content %}
+  </body>
+</html>
+```
+
+Baris-baris yang dikurung dalam `{% ... %} ` disebut dengan template tags Django. Baris-baris inilah yang akan berfungsi untuk memuat data secara dinamis dari Django ke HTML.
+
+Kemudian, Buka `settings.py` yang ada pada direktori proyek dan carilah baris yang mengandung variabel `TEMPLATES`. Tambahkan kode pada bagian `DIRS` dengan potongan kode berikut agar berkas `base.html` terdeteksi sebagai berkas template.
+
+```python
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'], # Tambahkan konten baris ini
+        'APP_DIRS': True,
+        ...
+    }
+]
+```
+
+Pada subdirektori `templates` yang ada pada direktori `main`, tambahkan kode berikut pada awal dan akhir berkas `main.html`
+
+```python
+{% extends 'base.html' %}
+ {% block content %}
+...
+...
+{% endblock content %}
+ ```
+
+Tambahkan baris `import uuid ` pada bagian atas berkas `models.py`, kemudian lakukan migrasi model dengan menjalankan perintah berikut
+
+```bash
+python3 manage.py makemigrations
+python3 manage.py migrate
+```
+
+### 2. Membuat input form untuk menambahkan objek model pada app sebelumnya
+
+Buat berkas baru pada direktori `main` dengan nama `forms.py` untuk membuat struktur form yang dapat menerima data Object Entry baru. Tambahkan kode berikut ke dalam berkas `forms.py`.
+
+```python
+from django.forms import ModelForm
+from main.models import Product
+
+class ProductEntryForm(ModelForm):
+    class Meta:
+        model = Product
+        fields = [ ] # Isi dengan input yang akan dimasukkan saat meng-entry objek baru 
+```
+
+Kemudian buka berkas `views.py` yang ada pada direktori `main`, kemudian tambahkan beberapa import baru pada bagian paling atas
+
+```python
+from django.shortcuts import render, redirect
+from main.forms import ProductEntryForm
+from main.models import Product
+```
+
+Masih di berkas yang sama, buat fungsi baru dengan nama `create_product_form` yang menerima parameter `request`. Tambahkan potongan kode di bawah ini untuk menghasilkan form yang dapat menambahkan data Object Entry secara otomatis ketika data di-submit dari form.
+
+```python
+def create_product_form(request):
+    if request.method == 'POST':
+        form = ProductEntryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('main:show_model')  # Redirect to model list page after saving
+    else:
+        form = ProductEntryForm()  # Display an empty form on GET request
+
+    context = {'form': form}
+    return render(request, 'create_product_form.html', context)
+```
+
+Tambahkan import `create_product_form` pada berkas `urls.py` yang ada pada direktori `main` dan tambahkan path URL ke dalam variabel `urlpatterns` pada `urls.py` di `main` untuk mengakses fungsi yang sudah di-import.
+
+```python
+urlpatterns = [
+   ...
+   path('create-mood-entry', create_mood_entry, name='create_mood_entry'),
+]
+```
+
+Kemudian, buat berkas baru dengan nama `create_product_form.html` pada direktori `main/templates` dan isi dengan kode berikut
+
+```python
+{% extends 'base.html' %}
+{% block content %}
+<h1>Add New Product</h1>
+
+<form method="POST">
+  {% csrf_token %}
+  <table>
+    {{ form.as_table }}  <!-- Displays form fields as a table -->
+    <tr>
+      <td></td>
+      <td>
+        <input type="submit" value="Add Product" />
+      </td>
+    </tr>
+  </table>
+</form>
+
+{% endblock content %}
+```
+
+### 2.  Tambahkan 4 fungsi views baru untuk melihat objek yang sudah ditambahkan dalam format XML, JSON, XML by ID, dan JSON by ID.
+
+Buka `views.py` yang ada pada direktori `main` dan tambahkan `import HttpResponse dan Serializer` pada bagian paling atas.
+
+```python
+from django.http import HttpResponse
+from django.core import serializers
+```
+
+Buatlah dua fungsi baru yang menerima parameter `request` dengan nama `show_xml` dan `show_jason` dan buatlah sebuah variabel di dalam fungsi tersebut yang menyimpan hasil query dari seluruh data yang ada pada Products, dan tambahkan return function berupa `HttpResponse` yang berisi parameter data hasil query yang sudah diserialisasi menjadi XML dan parameter `content_type="application/xml"`.
+
+```python
+def show_xml(request):
+    data = Product.objects.all()
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+def show_json(request):
+    data = Product.objects.all()
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+```
+
+Tambahkan import fungsi `show_xml` dan `show_json` pada berkas `urls.py`, dan tambahkan path url ke dalam `urlpatterns` untuk mengakses fungsi yang sudah diimpor
+
+```python
+...
+path('xml/', show_xml, name='show_xml'),
+path('json/', show_json, name='show_json'),
+...
+```
+
+Buatlah kembali dua fungsi baru yang menerima parameter `request` dan `id` dengan nama `show_xml_by_id` dan `show_json_by_id` dan buatlah sebuah variabel di dalam fungsi tersebut yang menyimpan hasil query dari seluruh data yang ada pada Products, dan tambahkan return function berupa `HttpResponse` yang berisi parameter data hasil query yang sudah diserialisasi menjadi JSON atau XML dan parameter content_type dengan value `"application/xml"` (untuk format XML) atau `"application/json"` (untuk format JSON).
+
+```python
+def show_xml_by_id(request, id):
+    data = Product.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+def show_json_by_id(request, id):
+    data = Product.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+```
+
+Tambahkan import fungsi `show_xml_by_id` dan `show_json_by_id` pada berkas `urls.py`, dan tambahkan path url ke dalam `urlpatterns` untuk mengakses fungsi yang sudah diimpor
+
+```python
+...
+path('xml/<str:id>/', show_xml_by_id, name='show_xml_by_id'),
+path('json/<str:id>/', show_json_by_id, name='show_json_by_id'),
+...
+```
+
+<br>
+<br>
+<hr>
+
+# PERTANYAAN
 
 ### 1. Mengapa Kita Memerlukan Data Delivery dalam Pengimplementasian Sebuah Platform?
 
@@ -69,6 +256,8 @@ Menambahkan `csrf_token` ke form Django membantu memastikan bahwa permintaan yan
 <br>
 <br>
 <hr>
+
+# Tugas 2 
 
 # Langkah-langkah Pengimplementasian
 ### 1. Membuat sebuah proyek Django baru
