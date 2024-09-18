@@ -49,7 +49,7 @@
 <body>
     <div class="welcome-container">
         <h1>Welcome to,<br>Zoldyck!</h1>
-        <form action="{% url 'main:show_model' %}" method="post">
+        <form action="{% url 'main:welcome' %}" method="post">
             {% csrf_token %}
             <label for="name">Enter your name:</label><br>
             <input type="text" id="name" name="name" required><br>
