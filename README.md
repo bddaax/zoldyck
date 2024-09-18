@@ -31,7 +31,7 @@ vi base.html
 
 Perintah ini akan membuat dan membuka file `base.html`, lalu kita dapat mengisi file `base.html` dengan kode berikut
 
-```pyhon
+```python
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -252,6 +252,17 @@ Method `is_valid()` dalam form Django digunakan untuk memvalidasi data yang diki
 - **Eksploitasi:** Dengan mengeksploitasi ketidakhadiran `csrf_token`, penyerang dapat melakukan aksi tanpa izin, seperti mengubah pengaturan pengguna atau melakukan transaksi yang tidak sah.
 
 Menambahkan `csrf_token` ke form Django membantu memastikan bahwa permintaan yang diterima server adalah permintaan yang sah dan mencegah berbagai jenis serangan CSRF.
+
+### 4. Mengakses keempat URL dalam format XML, JSON, XML by ID, dan JSON by ID menggunakan Postman
+
+#### URL dalam format XML
+
+#### URL dalam format JSON
+
+#### URL dalam format XML by ID
+
+#### URL dalam format JSON by ID
+
 
 <br>
 <br>
