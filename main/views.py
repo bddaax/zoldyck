@@ -7,15 +7,9 @@ from django.core import serializers
 
 # Create your views here.
 def welcome(request):
-    if request.method == 'POST':
-        # Simpan nama ke dalam session dari input di halaman welcome
-        request.session['name'] = request.POST.get('name')
-        return redirect('main:show_model')
     return redirect('main:show_model')
 
 def show_model(request):
-    # Ambil nama dari session
-    name = request.session.get('name', 'Guest')
 
     # Query dari database untuk model Product
     model = Product.objects.all()
