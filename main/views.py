@@ -15,7 +15,7 @@ def welcome(request):
 
 def show_model(request):
     # Ambil nama dari session
-    name = request.session.get('name')
+    name = request.session.get('name', 'Guest')
 
     # Query dari database untuk model Product
     model = Product.objects.all()
