@@ -15,5 +15,9 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-class ProductEntryForm(models.Model):
+class MoodEntry(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    @property
+    def is_mood_strong(self):
+        return self.mood_intensity > 7

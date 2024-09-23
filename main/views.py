@@ -1,18 +1,23 @@
+import datetime
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 from django.shortcuts import render, redirect
 from main.forms import ProductEntryForm
-from main.models import Product
+from .models import Product
 
 from django.http import HttpResponse
 from django.core import serializers
 
-# Create your views here.
-def welcome(request):
-    if request.method == 'POST':
-        # Simpan nama ke dalam session dari input di halaman welcome
-        request.session['name'] = request.POST.get('name')
-        return redirect('main:show_model')
-    return render(request, 'welcome.html')
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+
+# Create your views here.
+@login_required(login_url='/login')
 def show_model(request):
     # Ambil nama dari session
     name = request.session.get('name', 'Guest')
@@ -22,17 +27,6 @@ def show_model(request):
 
     # Data lengkap layanan detektif keluarga Zoldyck
     example_services = [
-        {
-            "name": "Zeno Zoldyck",
-            "service": "Dragon's Insight - Investigasi Mendalam",
-            "description": "Zeno menggunakan kemampuan Nen tingkat tinggi untuk menyelesaikan investigasi kompleks dengan pendekatan analitis yang mendalam dan cepat.",
-            "experience": "Zeno telah memecahkan lebih dari 50 kasus besar, termasuk investigasi lintas negara yang melibatkan organisasi kriminal besar.",
-            "price": 12000000,
-            "rating": 4.9,
-            "category": "Investigasi Mendalam",
-            "stock": 2,
-            "additional_experience": "Zeno sering dipanggil untuk menangani kasus yang melibatkan organisasi kejahatan internasional dan memiliki reputasi sebagai penyelidik yang tak terkalahkan.",
-        },
         {
             "name": "Silva Zoldyck",
             "service": "Powerful Case Resolution - Pemecahan Kasus Berisiko Tinggi",
@@ -101,29 +95,75 @@ def show_model(request):
         },
     ]
 
+    # Tambahkan produk dari database ke layanan detektif
+    for product in model:
+        example_services.append({
+            "name": product.name,
+            "service": getattr(product, 'service', 'Tidak Ada Layanan'),
+            "description": product.description,
+            "experience": getattr(product, 'experience', 'Tidak Ada Pengalaman'),
+            "price": product.price,
+            "rating": getattr(product, 'rating', 'Tidak Ada Rating'),
+            "category": getattr(product, 'category', 'Tidak Ada Kategori'),
+            "stock": product.stock,
+            "additional_experience": getattr(product, 'additional_experience', 'Tidak Ada Pengalaman Tambahan'),
+        })
+
     context = {
-        'name': name,
         'nama_saya': 'Brenda Po Lok Fahida',
         'kelas': 'PBP D',
         'npm': '2306152304',
         'app_name': 'Zoldyck Detective Services',
         'services': example_services,
         'products': model, 
+        'last_login': request.COOKIES['last_login'],
     }
 
     return render(request, 'main.html', context)
 
 def create_product_form(request):
-    if request.method == 'POST':
-        form = ProductEntryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('main:show_model')  # Redirect to model list page after saving
-    else:
-        form = ProductEntryForm()  # Display an empty form on GET request
+    form = ProductEntryForm(request.POST or None)
 
+    if form.is_valid():
+        form.save()
+        return redirect('main:show_model')
+    
     context = {'form': form}
     return render(request, 'create_product_form.html', context)
+
+def register(request):
+    form = UserCreationForm()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('main:login')
+    context = {'form':form}
+    return render(request, 'register.html', context)
+
+def login_user(request):
+   if request.method == 'POST':
+      form = AuthenticationForm(data=request.POST)
+
+      if form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        response = HttpResponseRedirect(reverse("main:show_model"))
+        response.set_cookie('last_login', str(datetime.datetime.now()))
+        return response
+
+   else:
+      form = AuthenticationForm(request)
+   context = {'form': form}
+   return render(request, 'login.html', context)
+
+def logout_user(request):
+    logout(request)
+    response = HttpResponseRedirect(reverse('main:login'))
+    response.delete_cookie('last_login')
+    return response
 
 def show_xml(request):
     data = Product.objects.all()
@@ -139,4 +179,4 @@ def show_xml_by_id(request, id):
 
 def show_json_by_id(request, id):
     data = Product.objects.filter(pk=id)
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")                   
