@@ -19,10 +19,7 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 @login_required(login_url='/login')
 def show_model(request):
-    # Ambil nama dari session
-    name = request.session.get('name', 'Guest')
-
-    # Query dari database untuk model Product
+   # Query dari database untuk model Product
     model = Product.objects.all()
 
     # Data lengkap layanan detektif keluarga Zoldyck
