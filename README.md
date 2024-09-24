@@ -206,7 +206,7 @@ path('json/<str:id>/', show_json_by_id, name='show_json_by_id'),
 
 # PERTANYAAN
 
-### 1. Mengapa Kita Memerlukan Data Delivery dalam Pengimplementasian Sebuah Platform?
+### Mengapa Kita Memerlukan Data Delivery dalam Pengimplementasian Sebuah Platform?
 
 Data delivery adalah proses pengiriman data dari satu bagian sistem ke bagian lain atau dari server ke klien. Dalam pengimplementasian sebuah platform, terutama platform berbasis web atau aplikasi mobile, data delivery sangat penting karena:
 
@@ -215,7 +215,7 @@ Data delivery adalah proses pengiriman data dari satu bagian sistem ke bagian la
 - **Konsistensi Data:** Data delivery yang baik membantu menjaga konsistensi data di seluruh aplikasi, menghindari inkonsistensi dan konflik yang mungkin muncul ketika data diperbarui di berbagai tempat.
 - **Keamanan:** Data delivery juga mencakup aspek keamanan, seperti enkripsi data saat transit, untuk melindungi informasi sensitif dari akses yang tidak sah.
 
-### 2. XML vs. JSON: Mana yang Lebih Baik?
+### XML vs. JSON: Mana yang Lebih Baik?
 
 **XML (Extensible Markup Language)** dan **JSON (JavaScript Object Notation)** adalah dua format data yang sering digunakan untuk pertukaran data. Berikut perbandingannya:
 
@@ -233,14 +233,14 @@ Data delivery adalah proses pengiriman data dari satu bagian sistem ke bagian la
 - **Kemudahan Penggunaan:** JSON lebih mudah dibaca dan ditulis dibandingkan XML, terutama bagi pengembang yang bekerja dengan JavaScript.
 - **Kompatibilitas:** JSON lebih cocok untuk aplikasi web modern dan API karena kemudahan integrasinya dengan JavaScript dan format data yang lebih sederhana.
 
-### 3. Fungsi dari Method `is_valid()` pada Form Django
+### Fungsi dari Method `is_valid()` pada Form Django
 
 Method `is_valid()` dalam form Django digunakan untuk memvalidasi data yang dikirimkan melalui form. Berikut penjelasannya:
 
 - **Validasi Data:** `is_valid()` memeriksa apakah data yang dikirimkan oleh pengguna memenuhi semua aturan validasi yang ditentukan dalam form. Ini termasuk memeriksa apakah semua field yang diperlukan diisi, apakah data sesuai dengan tipe yang diharapkan, dan apakah data mematuhi aturan validasi khusus (misalnya, format email yang benar).
 - **Pengembalian Status:** Jika data valid, `is_valid()` mengembalikan `True`, dan data dapat diakses melalui `form.cleaned_data`. Jika tidak valid, mengembalikan `False`, dan Anda dapat mengakses pesan kesalahan melalui `form.errors`.
 
-### 4. Pentingnya `csrf_token` pada Form Django
+### Pentingnya `csrf_token` pada Form Django
 
 **CSRF (Cross-Site Request Forgery)** adalah jenis serangan di mana penyerang dapat melakukan aksi di atas nama pengguna yang sudah masuk tanpa sepengetahuan pengguna tersebut. CSRF token adalah mekanisme keamanan yang melindungi aplikasi web dari serangan ini dengan memastikan bahwa setiap permintaan yang dilakukan kepada server berasal dari sumber yang sah.
 
@@ -253,7 +253,7 @@ Method `is_valid()` dalam form Django digunakan untuk memvalidasi data yang diki
 
 Menambahkan `csrf_token` ke form Django membantu memastikan bahwa permintaan yang diterima server adalah permintaan yang sah dan mencegah berbagai jenis serangan CSRF.
 
-### 4. Mengakses keempat URL dalam format XML, JSON, XML by ID, dan JSON by ID menggunakan Postman
+### Mengakses keempat URL dalam format XML, JSON, XML by ID, dan JSON by ID menggunakan Postman
 
 #### URL dalam format XML
 <img width="1440" alt="Screenshot 2024-09-18 at 10 56 27" src="https://github.com/user-attachments/assets/10b8a7ef-aebd-471e-9f5c-5fd9c5c79c17">
