@@ -2,6 +2,10 @@
 {% block content %}
 
 <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; text-align: center; position: relative;">
+    <header style="position: absolute; top: 10px; left: 10px; text-align: left;">
+        <h5 style="margin: 0;">Hi, {{ user.username }}</h5> <!-- Sapaan untuk user yang sedang login -->
+    </header>
+
     <header style="position: absolute; top: 10px; right: 10px; text-align: right;">
         <h5 style="margin: 0;">Sesi terakhir login: {{ last_login }}</h5>
         <a href="{% url 'main:logout' %}">
@@ -37,7 +41,7 @@
             {% endfor %}
         </div>
     </section>
-    
+
     <script>
         function showDetails(name, service, experience, price, rating, category, stock, additional_experience) {
             alert(`Name: ${name}\nService: ${service}\nExperience: ${experience}\nPrice: Rp ${price}\nRating: ${rating} / 5\nCategory: ${category}\nStock: ${stock} services available per month\nAdditional Experience: ${additional_experience}`);

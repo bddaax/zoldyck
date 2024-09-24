@@ -20,7 +20,7 @@ from django.contrib.auth.decorators import login_required
 @login_required(login_url='/login')
 def show_model(request):
    # Query dari database untuk model Product
-    model = Product.objects.all()
+    model = Product.objects.filter(user=request.user)
 
     # Data lengkap layanan detektif keluarga Zoldyck
     example_services = [
@@ -114,6 +114,7 @@ def show_model(request):
         'services': example_services,
         'products': model, 
         'last_login': request.COOKIES['last_login'],
+        'user': request.user,
     }
 
     return render(request, 'main.html', context)
@@ -121,10 +122,12 @@ def show_model(request):
 def create_product_form(request):
     form = ProductEntryForm(request.POST or None)
 
-    if form.is_valid():
-        form.save()
+    if form.is_valid() and request.method == "POST":
+        product_entry = form.save(commit=False)
+        product_entry.user = request.user
+        product_entry.save()
         return redirect('main:show_model')
-    
+
     context = {'form': form}
     return render(request, 'create_product_form.html', context)
 
