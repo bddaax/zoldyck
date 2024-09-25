@@ -17,7 +17,419 @@ Experience Zoldyck in action by visiting our live application: [Explore Zoldyck 
 <br>
 <hr>
 
-# Tugas 3
+# [Tugas 4](../)
+
+## Langkah-langkah Pengimplementasian
+### 1. Mengimplementasikan fungsi registrasi, login, dan logout
+
+Buka `views.py` yang ada pada subdirektori `main` pada proyek, lalu tambahkan import `UserCreationForm`, `messages`, `authenticate`, `login`, `AuthenticationForm`, `logout`, dan `login_required` pada bagian paling atas.
+
+```python
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+```
+
+Tambahkan fungsi `register` ke dalam `views.py`. Fungsi ini berfungsi untuk menghasilkan formulir registrasi secara otomatis dan menghasilkan akun pengguna ketika data di-submit dari form.
+
+```python
+def register(request):
+    form = UserCreationForm()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('main:login')
+    context = {'form':form}
+    return render(request, 'register.html', context)
+```
+
+Buatlah berkas HTML baru dengan nama `register.html` pada direktori `main/templates` dan isi dengan template berikut
+
+```python
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Register</title>
+{% endblock meta %}
+
+{% block content %}
+
+<div class="login">
+  <h1>Register</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td></td>
+        <td><input type="submit" name="submit" value="Daftar" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+
+{% endblock content %}
+```
+
+Tambahkan fungsi `login_user` ke dalam `views.py`. Fungsi ini berfungsi untuk mengautentikasi pengguna yang ingin login.
+
+```python
+def login_user(request):
+   if request.method == 'POST':
+      form = AuthenticationForm(data=request.POST)
+
+      if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('main:show_main')
+
+   else:
+      form = AuthenticationForm(request)
+   context = {'form': form}
+   return render(request, 'login.html', context)
+```
+
+Buatlah berkas HTML baru dengan nama login.html pada direktori main/templates dan isi dengan template berikut.
+
+```python
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Login</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="login">
+  <h1>Login</h1>
+
+  <form method="POST" action="">
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td></td>
+        <td><input class="btn login_btn" type="submit" value="Login" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %} Don't have an account yet?
+  <a href="{% url 'main:register' %}">Register Now</a>
+</div>
+
+{% endblock content %}
+```
+
+Tambahkan fungsi `logout_user` ke dalam `views.py`. Fungsi ini berfungsi untuk melakukan mekanisme logout.
+
+```python
+def logout_user(request):
+    logout(request)
+    return redirect('main:login')
+```
+
+Bukalah berkas `main.html` yang ada pada direktori `main/templates `dan tambahkan potongan kode di bawah ini setelah hyperlink tag untuk Add New Product Form.
+
+```pyhton
+...
+<a href="{% url 'main:logout' %}">
+  <button>Logout</button>
+</a>
+...
+```
+
+Buka `urls.py` yang ada pada subdirektori `main`, impor fungsi dan tambahkan path url ke dalam `urlpatterns` untuk mengakses funsi yang sudah diimpor 
+
+```python
+from main.views import register, login_user, logout_user
+
+ urlpatterns = [
+     ...
+     path('register/', register, name='register'),
+     path('login/', login_user, name='login'),
+     path('logout/', logout_user, name='logout'),
+ ]
+```
+
+Tambahkan potongan kode `@login_required(login_url='/login')` di atas fungsi `show_model` agar halaman main hanya dapat diakses oleh pengguna yang sudah login (terautentikasi).
+
+```python
+...
+@login_required(login_url='/login')
+def show_main(request):
+...
+```
+
+### 2. Menggunakan Data Dari Cookies
+
+Buka kembali `views.py` yang ada pada subdirektori `main`. Tambahkan import `HttpResponseRedirect`, `reverse`, dan `datetime` pada bagian paling atas.
+
+```python
+import datetime
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+```
+
+Pada fungsi `login_user`, tambahkan fungsionalitas menambahkan cookie yang bernama `last_login` untuk melihat kapan terakhir kali pengguna melakukan login. Ganti kode yang ada pada blok `if form.is_valid()` menjadi potongan kode berikut.
+
+```python
+...
+if form.is_valid():
+    user = form.get_user()
+    login(request, user)
+    response = HttpResponseRedirect(reverse("main:show_main"))
+    response.set_cookie('last_login', str(datetime.datetime.now()))
+    return response
+...
+```
+
+Pada fungsi `show_main`, tambahkan potongan kode `'last_login': request.COOKIES['last_login']` ke dalam variabel context.
+
+Lalu, ubah fungsi `logout_user` menjadi 
+
+```python
+def logout_user(request):
+    logout(request)
+    response = HttpResponseRedirect(reverse('main:login'))
+    response.delete_cookie('last_login')
+    return response
+```
+
+Buka berkas `main.html` dan tambahkan potongan kode berikut di atas atau dibawah tombol logout untuk menampilkan data last login.
+
+```python
+...
+<h5>Sesi terakhir login: {{ last_login }}</h5>
+...
+```
+
+### 3. Menghubungan Model Product dengan User
+
+Buka `models.py` yang ada pada subdirektori `main` dan tambahkan kode berikut pada dibawah baris kode untuk mengimpor model:
+
+```python
+from django.contrib.auth.models import User
+```
+
+Pada model `Product` yang sudah dibuat, tambahkan potongan kode berikut:
+
+```python
+class MoodEntry(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ...
+```
+
+Buka kembali `views.py` yang ada pada subdirektori `main`, dan ubah potongan kode pada fungsi `create_product_form` menjadi sebagai berikut:
+
+```python
+def create_product_form(request):
+    form = ProductEntryForm(request.POST or None)
+
+    if form.is_valid() and request.method == "POST":
+        product_entry = form.save(commit=False)
+        product_entry.user = request.user
+        product_entry.save()
+        return redirect('main:show_model')
+
+    context = {'form': form}
+    return render(request, 'create_product_form.html', context)
+```
+
+Ubah value dari `model` dan `context` pada fungsi `show_model` menjadi seperti berikut.
+
+```python
+def show_model(request):
+    model = Product.objects.filter(user=request.user)
+
+    context = {
+         'user': request.user.username,
+         ...
+    }
+...
+```
+
+Simpan semua perubahan, dan lakukan migrasi model dengan `python manage.py makemigrations`.
+
+Seharusnya, akan muncul error saat melakukan migrasi model. Pilih 1 untuk menetapkan default value untuk field user pada semua row yang telah dibuat pada database. Lalu, ketik angka 1 lagi untuk menetapkan user dengan ID 1 (yang sudah kita buat sebelumnya) pada model yang sudah ada.
+
+Lakukan `python manage.py migrate` untuk mengaplikasikan migrasi yang dilakukan pada poin sebelumnya.
+
+Langkah terakhir, kita harus mempersiapkan aplikasi web kita untuk environtment production. Untuk itu, tambahkan sebuah import baru pada `settings.py` yang ada pada subdirektori `zoldyck`
+
+```python
+import os
+```
+
+Kemudian, ganti variabel `DEBUG` dari berkas `settings.py` menjadi seperti ini.
+
+```python
+PRODUCTION = os.getenv("PRODUCTION", False)
+DEBUG = not PRODUCTION
+```
+
+<br>
+<br>
+<hr>
+
+# PERTANYAAN
+
+### Apa perbedaan antara HttpResponseRedirect() dan redirect()
+
+`HttpResponseRedirect()` adalah kelas bawaan Django yang digunakan untuk mengarahkan (redirect) pengguna dari satu URL ke URL lain. Fungsinya adalah untuk mengembalikan response HTTP 302, yang memberitahu browser untuk menuju URL yang baru. Saat kamu menggunakan `HttpResponseRedirect()`, kamu perlu memberikan URL yang spesifik, contohnya:
+
+```python
+from django.http import HttpResponseRedirect
+return HttpResponseRedirect('/some-url/')
+```
+
+`redirect()` adalah fungsi shortcut (fungsi yang sudah disederhanakan) di Django yang lebih fleksibel daripada `HttpResponseRedirect()`. Kamu bisa menggunakan `redirect()` dengan berbagai parameter seperti URL, nama view, atau bahkan objek model yang mendefinisikan URL secara dinamis.
+
+#### Penggunaan `HttpResponseRedirect()` dalam proyek zoldyck 
+
+Di dalam fungsi `login_user`, setelah pengguna berhasil login, sistem menggunakan `HttpResponseRedirect()` untuk mengarahkan pengguna ke halaman utama (`show_model`). Selain itu, cookie `last_login` diset untuk menyimpan waktu login terakhir pengguna.
+
+Fungsi `logout_user` juga menggunakan `HttpResponseRedirect()` untuk mengarahkan pengguna kembali ke halaman login setelah logout, dan pada saat yang sama, cookie `last_login` dihapus.
+
+```python
+response = HttpResponseRedirect(reverse("main:show_model"))
+response.set_cookie('last_login', str(datetime.datetime.now()))
+```
+
+#### Penggunaan `redirect()` dalam proyek zoldyck 
+
+Dalam fungsi `create_product_form`, setelah form valid dan produk baru disimpan, sistem menggunakan `redirect()` untuk mengarahkan pengguna kembali ke halaman yang menampilkan produk (`show_model`).
+
+```python
+return redirect('main:show_model')
+```
+
+Dalam fungsi `register`, setelah pengguna berhasil mendaftar, sistem mengarahkan pengguna ke halaman login menggunakan `redirect()`.
+
+```python
+return redirect('main:login')
+```
+
+```bash
+Kapan Menggunakan HttpResponseRedirect() dan redirect()?
+`HttpResponseRedirect()` lebih cocok digunakan jika kita ingin mengatur lebih banyak hal di dalam response, seperti menambahkan cookies, mengatur headers, atau response lain yang memerlukan modifikasi lebih lanjut.
+
+`redirect()` adalah cara yang lebih ringkas dan sederhana untuk mengarahkan pengguna ke URL, baik itu URL yang disediakan langsung, nama view, atau object model yang berkaitan.
+```
+
+<hr>
+
+### Jelaskan cara kerja penghubungan model Product dengan User!
+
+Di Django, untuk menghubungkan model `Product` dengan model `User`, kita biasanya menggunakan relasi **ForeignKey**. Relasi ini memungkinkan satu produk terkait dengan satu pengguna. Dengan kata lain, setiap produk dihubungkan dengan pengguna tertentu yang memilikinya atau membuatnya. Berikut adalah langkah-langkah bagaimana model `Product` bisa dihubungkan dengan model `User`:
+
+**Mengimpor model** `User` Django sudah menyediakan model `User` secara bawaan melalui `django.contrib.auth.models.User`.
+
+**Menambahkan ForeignKey pada Model** `Product` Pada model `Product`, kita tambahkan field `user` yang dihubungkan dengan model `User` menggunakan `ForeignKey`. Contohnya:
+
+```python
+from django.contrib.auth.models import User
+from django.db import models
+
+class Product(models.Model):
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+```
+
+`ForeignKey(User, on_delete=models.CASCADE)`: Ini mendefinisikan bahwa setiap produk terkait dengan satu pengguna (`User`). Jika pengguna dihapus, maka semua produk yang terkait juga akan dihapus (`on_delete=models.CASCADE`).
+
+**Menampilkan Produk Berdasarkan Pengguna** Pada view, kamu bisa menggunakan request.user untuk menampilkan produk yang hanya terkait dengan pengguna yang sedang login.
+
+<hr>
+
+### Apa perbedaan antara authentication dan authorization, apakah yang dilakukan saat pengguna login? Jelaskan bagaimana Django mengimplementasikan kedua konsep tersebut.
+
+**Authentication (Otentikasi)** adalah proses memverifikasi identitas seseorang. Ketika pengguna login, mereka memasukkan kredensial seperti username dan password, yang kemudian diperiksa apakah cocok dengan yang ada di database. Jika cocok, pengguna dianggap "authenticated" atau telah diotentikasi. Contoh otentikasi adalah login dengan username dan password.
+
+**Authorization (Otorisasi)** adalah proses menentukan apa yang diizinkan atau tidak diizinkan untuk dilakukan oleh pengguna setelah mereka diotentikasi. Authorization mengatur hak akses pengguna, seperti siapa yang boleh mengakses halaman tertentu atau melakukan tindakan spesifik.
+
+**Saat pengguna login:**
+`Authentication` terjadi ketika pengguna memasukkan kredensial mereka (username dan password) dan sistem memeriksa apakah kredensial tersebut valid.
+`Authorization` menentukan apa yang bisa dilakukan oleh pengguna setelah mereka login. Misalnya, pengguna biasa mungkin hanya bisa melihat profil mereka, sementara admin bisa mengakses data lain yang lebih sensitif.
+
+**Django mengimplementasikan kedua konsep ini sebagai berikut:**
+
+**Authentication**: Django menggunakan mekanisme otentikasi bawaan dengan model User dan sistem autentikasi yang mendukung login, logout, dan pendaftaran pengguna. Django memiliki fungsi seperti `authenticate()` dan `login()` untuk otentikasi pengguna.
+
+**Authorization**: Setelah pengguna diotentikasi, Django menggunakan decorators seperti `@login_required` untuk membatasi akses ke halaman tertentu, dan peran (groups atau permissions) untuk mengatur hak akses pengguna
+
+<hr>
+ 
+### Bagaimana Django mengingat pengguna yang telah login? Jelaskan kegunaan lain dari cookies dan apakah semua cookies aman digunakan?
+
+Django mengingat pengguna yang telah login dengan menggunakan **session framework**. Setiap kali pengguna berhasil login, Django menyimpan informasi tentang pengguna dalam **session**. Django secara otomatis membuat **session ID** untuk pengguna yang sedang login, dan session ID ini disimpan dalam browser pengguna sebagai **cookie**. Ketika pengguna melakukan request di masa mendatang, browser mengirimkan cookie ini kembali ke server, dan Django dapat mengidentifikasi pengguna berdasarkan session ID tersebut.
+
+**Cookies dan session dalam Django:**
+• Saat pengguna login, Django membuat session ID dan menyimpannya di cookies browser.
+• Server menyimpan informasi terkait session ID tersebut, seperti data pengguna yang terkait dengan session itu.
+• Ketika pengguna mengunjungi kembali situs tersebut, cookies akan dikirim bersama dengan request HTTP, dan Django dapat mengetahui pengguna mana yang sedang melakukan request.
+
+**Contoh penggunaan session di Django pada proyek zoldyck:**
+```python
+
+def login_user(request):
+   if request.method == 'POST':
+      form = AuthenticationForm(data=request.POST)
+
+      if form.is_valid():
+        user = form.get_user()
+        login(request, user) <-------------------------- create session
+        response = HttpResponseRedirect(reverse("main:show_model"))
+        response.set_cookie('last_login', str(datetime.datetime.now()))
+        return response
+
+   else:
+      form = AuthenticationForm(request)
+   context = {'form': form}
+   return render(request, 'login.html', context)
+```
+
+**Kegunaan lain dari cookies:**
+`Menyimpan preferensi pengguna`: Misalnya, bahasa atau tema yang dipilih pengguna bisa disimpan dalam cookies.
+`Pelacakan`: Cookies sering digunakan oleh situs untuk melacak perilaku pengguna di situs tersebut.
+`Authentication token`: Untuk menjaga agar pengguna tetap login tanpa harus memasukkan kredensial setiap kali, cookies bisa digunakan untuk menyimpan token autentikasi.
+
+**Apakah Semua Cookies Aman Digunakan?**
+Tidak semua cookies aman. Beberapa masalah keamanan terkait cookies meliputi:
+`Cookies yang tidak dienkripsi`: Jika cookies tidak dienkripsi, informasi sensitif seperti session ID bisa dicegat melalui serangan man-in-the-middle.
+`Cookies yang disalahgunakan`: Cookies bisa digunakan untuk melacak aktivitas pengguna tanpa persetujuan mereka, yang melanggar privasi.
+`Cross-site scripting (XSS)`: Jika sebuah situs rentan terhadap XSS, penyerang bisa mencuri cookies pengguna dan menyalahgunakannya untuk login ke akun mereka.
+
+Untuk mengatasi masalah keamanan ini, Django menyediakan beberapa perlindungan:
+`HttpOnly flag`: Mencegah JavaScript mengakses cookies, yang dapat membantu mengurangi risiko XSS.
+`Secure flag`: Hanya mengirim cookies melalui koneksi HTTPS.
+`CSRF Protection`: Melindungi dari serangan Cross-Site Request Forgery (CSRF) dengan token khusus pada form.
+
+<br>
+<br>
+<hr>
+
+# [Tugas 3](../)
 
 ## Langkah-langkah Pengimplementasian
 ### 1. Persiapan dan langkah awal sebelum mengerjakan Tugas 3
@@ -215,6 +627,8 @@ Data delivery adalah proses pengiriman data dari satu bagian sistem ke bagian la
 - **Konsistensi Data:** Data delivery yang baik membantu menjaga konsistensi data di seluruh aplikasi, menghindari inkonsistensi dan konflik yang mungkin muncul ketika data diperbarui di berbagai tempat.
 - **Keamanan:** Data delivery juga mencakup aspek keamanan, seperti enkripsi data saat transit, untuk melindungi informasi sensitif dari akses yang tidak sah.
 
+<hr>
+
 ### XML vs. JSON: Mana yang Lebih Baik?
 
 **XML (Extensible Markup Language)** dan **JSON (JavaScript Object Notation)** adalah dua format data yang sering digunakan untuk pertukaran data. Berikut perbandingannya:
@@ -233,12 +647,16 @@ Data delivery adalah proses pengiriman data dari satu bagian sistem ke bagian la
 - **Kemudahan Penggunaan:** JSON lebih mudah dibaca dan ditulis dibandingkan XML, terutama bagi pengembang yang bekerja dengan JavaScript.
 - **Kompatibilitas:** JSON lebih cocok untuk aplikasi web modern dan API karena kemudahan integrasinya dengan JavaScript dan format data yang lebih sederhana.
 
+<hr>
+
 ### Fungsi dari Method `is_valid()` pada Form Django
 
 Method `is_valid()` dalam form Django digunakan untuk memvalidasi data yang dikirimkan melalui form. Berikut penjelasannya:
 
 - **Validasi Data:** `is_valid()` memeriksa apakah data yang dikirimkan oleh pengguna memenuhi semua aturan validasi yang ditentukan dalam form. Ini termasuk memeriksa apakah semua field yang diperlukan diisi, apakah data sesuai dengan tipe yang diharapkan, dan apakah data mematuhi aturan validasi khusus (misalnya, format email yang benar).
 - **Pengembalian Status:** Jika data valid, `is_valid()` mengembalikan `True`, dan data dapat diakses melalui `form.cleaned_data`. Jika tidak valid, mengembalikan `False`, dan Anda dapat mengakses pesan kesalahan melalui `form.errors`.
+
+<hr>
 
 ### Pentingnya `csrf_token` pada Form Django
 
@@ -252,6 +670,8 @@ Method `is_valid()` dalam form Django digunakan untuk memvalidasi data yang diki
 - **Eksploitasi:** Dengan mengeksploitasi ketidakhadiran `csrf_token`, penyerang dapat melakukan aksi tanpa izin, seperti mengubah pengaturan pengguna atau melakukan transaksi yang tidak sah.
 
 Menambahkan `csrf_token` ke form Django membantu memastikan bahwa permintaan yang diterima server adalah permintaan yang sah dan mencegah berbagai jenis serangan CSRF.
+
+<hr>
 
 ### Mengakses keempat URL dalam format XML, JSON, XML by ID, dan JSON by ID menggunakan Postman
 
@@ -273,7 +693,7 @@ Menambahkan `csrf_token` ke form Django membantu memastikan bahwa permintaan yan
 <br>
 <hr>
 
-# Tugas 2 
+# [Tugas 2](../)
 
 ## Langkah-langkah Pengimplementasian
 ### 1. Membuat sebuah proyek Django baru
@@ -429,14 +849,19 @@ Setelah logika diproses di views dan data yang diperlukan diambil dari models (j
 
 Setelah template dirender, Django mengembalikan **HTTP response** yang berisi halaman HTML kepada browser. Browser kemudian menampilkan halaman tersebut kepada pengguna sesuai dengan tampilan yang telah dirender oleh template. Seluruh proses ini berjalan dengan sangat terstruktur, di mana setiap komponen memiliki peran masing-masing: **URLs.py** mengarahkan request, **views.py** memproses logika dan berinteraksi dengan models, **models.py** mengelola data dalam database, dan **templates** merender halaman untuk ditampilkan kepada client. Struktur ini memastikan bahwa setiap request yang masuk dapat diproses dengan efisien dan respons yang dihasilkan dapat memenuhi kebutuhan pengguna secara dinamis.
 
+<hr>
 
 ### Fungsi Git
 
 Git berfungsi sebagai sistem kontrol versi yang sangat penting dalam pengembangan perangkat lunak. Dengan Git, pengembang dapat melacak setiap perubahan yang dilakukan pada kode sumber secara terperinci. Hal ini memungkinkan mereka untuk melihat riwayat lengkap perubahan, termasuk siapa yang membuat perubahan, kapan perubahan tersebut dibuat, dan alasan di balik perubahan itu. Git mendukung kerja tim dengan menyediakan fitur cabang (branch) yang memungkinkan pengembang untuk mengerjakan fitur baru atau perbaikan bug secara terpisah dari kode utama (master branch). Cabang-cabang ini dapat digabungkan (merged) kembali ke kode utama dengan aman setelah fitur atau perbaikan selesai dan diuji. Selain itu, Git memudahkan proses rollback, yaitu mengembalikan kode ke versi sebelumnya jika terjadi kesalahan atau masalah, yang membantu meminimalkan risiko dan kerusakan pada proyek. Dengan fitur seperti konflik penyatuan (merge conflicts) yang terkelola dengan baik dan kemampuan untuk membandingkan versi kode, Git membantu menjaga integritas kode dan memastikan kolaborasi yang efisien di antara tim pengembang dalam proyek yang kompleks dan dinamis.
 
+<hr>
+
 ### Mengapa Django Dijadikan Permulaan Pembelajaran Pengembangan Perangkat Lunak?
 
 Django sering dipilih sebagai framework pengenalan dalam pembelajaran pengembangan perangkat lunak karena beberapa alasan utama. Pertama, Django dirancang untuk mendukung pengembangan cepat (rapid development) dengan mengutamakan efisiensi dan produktivitas. Framework ini mengikuti arsitektur Model-View-Template (MVT), yang memisahkan tanggung jawab dalam pengembangan aplikasi web sehingga pemula dapat lebih mudah memahami konsep dasar seperti routing, templating, dan manajemen basis data tanpa terjebak dalam kode yang berlebihan. Django juga menyediakan berbagai fitur bawaan yang mempermudah pengelolaan aplikasi, seperti sistem autentikasi pengguna, antarmuka admin yang otomatis, dan sistem migrasi basis data. Dokumentasi Django yang lengkap dan komunitas yang aktif menyediakan banyak sumber daya belajar, tutorial, dan forum dukungan, membuatnya lebih mudah bagi pemula untuk mendapatkan bantuan dan memahami framework ini. Selain itu, Django mengutamakan keamanan dengan fitur-fitur seperti perlindungan terhadap serangan Cross-Site Request Forgery (CSRF) dan SQL Injection, yang mengajarkan praktik keamanan yang penting dalam pengembangan web.
+
+<hr>
 
 ### Mengapa Model pada Django Disebut ORM (Object-Relational Mapping)?
 

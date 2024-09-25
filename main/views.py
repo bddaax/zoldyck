@@ -114,7 +114,7 @@ def show_model(request):
         'services': example_services,
         'products': model, 
         'last_login': request.COOKIES['last_login'],
-        'user': request.user,
+        'user': request.user.username,
     }
 
     return render(request, 'main.html', context)
