@@ -1,4 +1,6 @@
 ## [E-Commerce app for PBP 2024 / 2025](../)
+### [Tugas 2](#tugas-2) [Tugas 3](#tugas-3) [Tugas 4](#tugas-4)
+
 
 # ZOLDYCK
 
@@ -17,7 +19,7 @@ Experience Zoldyck in action by visiting our live application: [Explore Zoldyck 
 <br>
 <hr>
 
-# [Tugas 4](../)
+# Tugas 4
 
 ## Langkah-langkah Pengimplementasian
 ### 1. Mengimplementasikan fungsi registrasi, login, dan logout
@@ -429,7 +431,7 @@ Untuk mengatasi masalah keamanan ini, Django menyediakan beberapa perlindungan:
 <br>
 <hr>
 
-# [Tugas 3](../)
+# Tugas 3
 
 ## Langkah-langkah Pengimplementasian
 ### 1. Persiapan dan langkah awal sebelum mengerjakan Tugas 3
@@ -693,7 +695,7 @@ Menambahkan `csrf_token` ke form Django membantu memastikan bahwa permintaan yan
 <br>
 <hr>
 
-# [Tugas 2](../)
+# Tugas 2
 
 ## Langkah-langkah Pengimplementasian
 ### 1. Membuat sebuah proyek Django baru
