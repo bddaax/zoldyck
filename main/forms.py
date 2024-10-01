@@ -1,7 +1,13 @@
-from django.forms import ModelForm
-from main.models import Product
+from django import forms
+from .models import Product
 
-class ProductEntryForm(ModelForm):
+class ProductEntryForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ["name", "price", "description", "service", "experience", "rating", "category", "stock", "additional_experience"]
+        fields = ['name', 'price', 'description', 'service', 'experience', 'rating', 'stock']
+
+    def clean_rating(self):
+        rating = self.cleaned_data.get('rating')
+        if rating < 0 or rating > 100:
+            raise forms.ValidationError('Rating must be between 0 and 100.')
+        return rating

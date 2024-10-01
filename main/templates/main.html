@@ -1,51 +1,77 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Zoldyck</title>
+{% endblock meta %}
+
 {% block content %}
-
-<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; text-align: center; position: relative;">
-    <header style="position: absolute; top: 10px; left: 10px; text-align: left;">
-        <h5 style="margin: 0;">Hi, {{ user.username }}</h5> 
-    </header>
-
-    <header style="position: absolute; top: 10px; right: 10px; text-align: right;">
-        <h5 style="margin: 0;">Sesi terakhir login: {{ last_login }}</h5>
-        <a href="{% url 'main:logout' %}">
-            <button style="margin-top: 5px;">Logout</button>
-        </a>
-    </header>
-
-    <h1 style="margin-top: 80px;">{{ app_name }}</h1> 
-    <p style="margin-top: 20px;">
-        Zoldyck is an advanced application that connects you with premium detective services. Our expert team provides solutions from in-depth investigations to rapid case resolutions and strategic sabotage, all crafted to solve mysteries with high efficiency.
-    </p>
-    <h1> (╭ರ_•́)</h1>
-    <p>made by {{ nama_saya }} - {{ npm }} dari kelas {{ kelas }}</p>
-    
-    <section style="width: 100%; max-width: 800px; margin-top: 20px;">
-        <h2>Daftar Layanan Detektif Keluarga Zoldyck</h2>
-        <a href="{% url 'main:create_product_form' %}" style="margin-bottom: 20px; display: inline-block;">Add a New Product</a>
-        <div style="display: flex; flex-wrap: wrap; justify-content: center;">
-            {% for service in services %}
-            <div style="border: 1px solid #000; padding: 10px; margin: 10px; width: 200px;">
-                <h3>{{ service.name }}</h3>
-                <p>{{ service.description }}</p>
-                <button onclick="showDetails(
-                    '{{ service.name }}', 
-                    '{{ service.service }}', 
-                    '{{ service.experience }}', 
-                    '{{ service.price }}', 
-                    '{{ service.rating }}', 
-                    '{{ service.category }}', 
-                    '{{ service.stock }}', 
-                    '{{ service.additional_experience }}')">Details</button>
-            </div>
-            {% endfor %}
+{% include 'navbar.html' %}
+<div class="overflow-x-hidden px-4 md:px-8 pb-8 pt-24 min-h-screen bg-gray-100 flex flex-col">
+    <!-- Full-width card_info -->
+    <div class="p-2 mb-6 relative">
+        <!-- This will pull in your card_info.html template (full width) -->
+        <div class="relative z-30 w-full">
+            {% include "card_info.html" %}
         </div>
-    </section>
+    </div>
 
-    <script>
-        function showDetails(name, service, experience, price, rating, category, stock, additional_experience) {
-            alert(`Name: ${name}\nService: ${service}\nExperience: ${experience}\nPrice: Rp ${price}\nRating: ${rating} / 5\nCategory: ${category}\nStock: ${stock} services available per month\nAdditional Experience: ${additional_experience}`);
-        }
-    </script>    
+    <!-- Add New Product Button -->
+    <div class="flex justify-center mb-6">
+        <a href="{% url 'main:create_product_form' %}" class="bg-gray-200 text-gray-800 font-bold py-3 px-8 rounded-md shadow-md flex items-center space-x-2">
+            <span class="text-lg">Add New Product</span>
+            <span class="text-lg font-bold">+</span>
+        </a>
+    </div>
+
+    {% if not services %}
+    <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+        <img src="{% static 'image/zoldyck-family.png' %}" alt="Sad face" class="w-32 h-32 mb-4"/>
+        <p class="text-center text-gray-600 mt-4">Belum ada jasa pada Zoldyck Detective Services.</p>
+    </div>
+    {% else %}
+    <!-- Only card_product is inside grid with 2 columns -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {% for product in services %}
+        {% include "card_product.html" %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Last Login Section (Moved to Bottom) -->
+    <div class="px-3 mb-4 mt-8">
+        <div class="flex items-center justify-center bg-gray-200 py-2 px-4 rounded-md shadow-md">
+            <h1 class="text-gray-800 font-semibold text-lg">Last Login: {{ last_login }}</h1>
+        </div>
+    </div>
+
+    <!-- Copyright Section -->
+    <div class="text-center mt-6 text-gray-600">
+        <p>© 2024 Brenda Po Lok Fahida 2306152304 Pemrograman Berbasis Platform D</p>
+    </div>
+</div>
+
+<script>
+    const carousel = document.getElementById('carousel');
+    const totalSlides = document.querySelectorAll('.min-w-[70%]').length;
+    const slideWidth = document.querySelector('.min-w-[70%]').offsetWidth + 16; // Width + margin
+
+    let currentIndex = 0;
+
+    function updateCarousel() {
+        const offset = -currentIndex * slideWidth;
+        carousel.style.transform = `translateX(${offset}px)`;
+    }
+
+    document.getElementById('next').addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        updateCarousel();
+    });
+
+    document.getElementById('prev').addEventListener('click', () => {
+        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        updateCarousel();
+    });
+</script>
 
 {% endblock content %}

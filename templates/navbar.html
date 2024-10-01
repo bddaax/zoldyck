@@ -1,0 +1,74 @@
+{% load static %}
+
+<nav class="bg-black shadow-lg fixed top-0 left-0 z-40 w-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center">
+        <!-- Nama Zoldyck -->
+        <h1 class="text-white font-bold text-lg">Zoldyck</h1>
+      </div>
+      <!-- Navbar Links -->
+      <ul class="hidden md:flex space-x-6">
+        <li><a href="#" class="text-gray-300 text-sm hover:text-white transition duration-300">Home</a></li>
+        <li><a href="#" class="text-gray-300 text-sm hover:text-white transition duration-300">Products</a></li>
+        <li><a href="#" class="text-gray-300 text-sm hover:text-white transition duration-300">Cart</a></li>
+        <li><a href="#" class="text-gray-300 text-sm hover:text-white transition duration-300">Contact</a></li>
+      </ul>
+      <!-- User Authentication Links -->
+      <div class="hidden md:flex items-center space-x-4">
+        {% if user.is_authenticated %}
+          <!-- Welcome User and Logout Button -->
+          <span class="text-gray-300 text-sm">Welcome, {{ user.username }}</span>
+          <a href="{% url 'main:logout' %}" class="text-white bg-black hover:bg-gray-800 font-bold py-2 px-4 rounded transition duration-300">
+            ⏻
+          </a>
+        {% else %}
+          <!-- Login and Register Buttons -->
+          <a href="{% url 'main:login' %}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+            Login
+          </a>
+          <a href="{% url 'main:register' %}" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+            Register
+          </a>
+        {% endif %}
+      </div>
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden flex items-center">
+        <button class="mobile-menu-button">
+          <svg class="w-6 h-6 text-white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu hidden md:hidden px-4 w-full">
+    <ul class="space-y-1">
+      <li><a href="#" class="block text-gray-300 hover:text-white py-2 px-4 rounded">Home</a></li>
+      <li><a href="#" class="block text-gray-300 hover:text-white py-2 px-4 rounded">Products</a></li>
+      <li><a href="#" class="block text-gray-300 hover:text-white py-2 px-4 rounded">Cart</a></li>
+      <li><a href="#" class="block text-gray-300 hover:text-white py-2 px-4 rounded">Contact</a></li>
+      {% if user.is_authenticated %}
+        <li><span class="block text-gray-300 py-2 px-4">Welcome, {{ user.username }}</span></li>
+        <li><a href="{% url 'main:logout' %}" class="block text-center text-white bg-black hover:bg-gray-800 font-bold py-2 px-4 rounded transition duration-300">
+          ⏻
+        </a></li>
+      {% else %}
+        <li><a href="{% url 'main:login' %}" class="block text-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">Login</a></li>
+        <li><a href="{% url 'main:register' %}" class="block text-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">Register</a></li>
+      {% endif %}
+    </ul>
+  </div>
+
+  <!-- Script for Mobile Menu Toggle -->
+  <script>
+    const btn = document.querySelector("button.mobile-menu-button");
+    const menu = document.querySelector(".mobile-menu");
+
+    btn.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+    });
+  </script>
+</nav>
