@@ -1,4 +1,4 @@
-## [E-Commerce app for PBP 2024 / 2025](../)
+<img width="1440" alt="Screenshot 2024-10-02 at 11 25 39" src="https://github.com/user-attachments/assets/db9b2e08-3519-4a8b-bf96-954d487bf22e"><img width="1440" alt="Screenshot 2024-10-02 at 11 27 01" src="https://github.com/user-attachments/assets/7ab50db3-ec79-4b3a-abdf-006dcbbc9649"><img width="1440" alt="Screenshot 2024-10-02 at 11 24 42" src="https://github.com/user-attachments/assets/802d8774-a350-4dc2-a95f-9f04b5141542">## [E-Commerce app for PBP 2024 / 2025](../)
 
 
 # ZOLDYCK
@@ -226,36 +226,36 @@ Kemudian, tautkan navbar tersebut ke dalam `main.html`, `create_mood_entry.html`
 
 Kustomisasi halaman login, register, dan tambah product semenarik mungkin.
 **Login**
-![Uploading Screenshot 2024-10-02 at 11.24.42.png…]()
+<img width="1440" alt="Screenshot 2024-10-02 at 11 24 42" src="https://github.com/user-attachments/assets/2cc0fa9a-2743-4f9f-9c0e-8aca55162033">
+
 
 **Register**
-![Uploading Screenshot 2024-10-02 at 11.25.39.png…]()
+<img width="1440" alt="Screenshot 2024-10-02 at 11 25 39" src="https://github.com/user-attachments/assets/f4fc1e0e-b5e9-4bff-b3c7-181a562bea9d">
+
 
 **Daftar Produk**
-![Uploading Screenshot 2024-10-02 at 11.27.01.png…]()
-
-
 Jika pada aplikasi belum ada product yang tersimpan, halaman daftar product akan menampilkan gambar dan pesan bahwa belum ada product yang terdaftar.
-![Uploading Screenshot 2024-10-02 at 11.28.06.png…]()
+<img width="1440" alt="Screenshot 2024-10-02 at 11 28 06" src="https://github.com/user-attachments/assets/a2f15f2d-561f-4f22-8af2-e0da7eab307b">
 
 
 Jika sudah ada product yang tersimpan, halaman daftar product akan menampilkan detail setiap product dengan menggunakan card.
-![Uploading Screenshot 2024-10-02 at 11.29.31.png…]()
+<img width="1440" alt="Screenshot 2024-10-02 at 11 29 31" src="https://github.com/user-attachments/assets/30c6a5d2-07c7-42b4-a966-226691fff6f4">
 
 
 Untuk setiap card product, buatlah dua buah button untuk mengedit dan menghapus product pada card tersebut!
-![Uploading Screenshot 2024-10-02 at 11.31.20.png…]()
+<img width="1440" alt="Screenshot 2024-10-02 at 11 31 20" src="https://github.com/user-attachments/assets/8c48b1bf-8eda-47b6-b6ed-06232462ecd0">
 
 
 Buatlah navigation bar (navbar) untuk fitur-fitur pada aplikasi yang responsive terhadap perbedaan ukuran device, khususnya mobile dan desktop.
 **Kondisi navbar untuk versi mobile:**
-![Uploading Screenshot 2024-10-02 at 11.32.40.png…]()
-![Uploading Screenshot 2024-10-02 at 11.33.14.png…]()
+<img width="971" alt="Screenshot 2024-10-02 at 11 32 40" src="https://github.com/user-attachments/assets/c9c46728-a34d-4e81-a8fd-ec221d86bd62">
+<img width="923" alt="Screenshot 2024-10-02 at 11 33 14" src="https://github.com/user-attachments/assets/3db92999-fe56-42d1-9ae2-84a32aba7087">
 
 
 **Kondisi navbar untuk versi desktop:**
-![Uploading Screenshot 2024-10-02 at 11.31.57.png…]()
-![Uploading Screenshot 2024-10-02 at 11.27.01.png…]()
+<img width="1440" alt="Screenshot 2024-10-02 at 11 31 57" src="https://github.com/user-attachments/assets/6428902a-b342-4a36-b22b-5921a20c0236">
+<img width="1440" alt="Screenshot 2024-10-02 at 11 27 01" src="https://github.com/user-attachments/assets/63116829-7beb-40f9-879a-d0de2e6447a6">
+
 
 
 <br>
