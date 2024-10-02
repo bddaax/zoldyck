@@ -1,4 +1,4 @@
-<img width="1440" alt="Screenshot 2024-10-02 at 11 25 39" src="https://github.com/user-attachments/assets/db9b2e08-3519-4a8b-bf96-954d487bf22e"><img width="1440" alt="Screenshot 2024-10-02 at 11 27 01" src="https://github.com/user-attachments/assets/7ab50db3-ec79-4b3a-abdf-006dcbbc9649"><img width="1440" alt="Screenshot 2024-10-02 at 11 24 42" src="https://github.com/user-attachments/assets/802d8774-a350-4dc2-a95f-9f04b5141542">## [E-Commerce app for PBP 2024 / 2025](../)
+[E-Commerce app for PBP 2024 / 2025](../)
 
 
 # ZOLDYCK
