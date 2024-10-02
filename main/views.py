@@ -16,7 +16,6 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-# Create your views here.
 @login_required(login_url='/login')
 def show_model(request):
     # Query dari database untuk model Product
