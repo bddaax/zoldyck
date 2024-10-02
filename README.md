@@ -1,5 +1,4 @@
 ## [E-Commerce app for PBP 2024 / 2025](../)
-### [Tugas 2](#tugas-2) [Tugas 3](#tugas-3) [Tugas 4](#tugas-4)
 
 
 # ZOLDYCK
@@ -15,11 +14,578 @@ Zoldyck is the ideal choice for those seeking not only reliable but also innovat
 
 Experience Zoldyck in action by visiting our live application: [Explore Zoldyck App](http://brenda-po-zoldyck.pbp.cs.ui.ac.id). Dive into the world of detective services and see how our app can assist you with your investigative needs!
 
+
+## Pertanyaan
+
+
+<details>
+  <summary><strong>Tugas 5</strong></summary>
+
+## Langkah-langkah Pengimplementasian
+### 1. Mengimplementasikan fungsi untuk menghapus dan mengedit product.
+
+Buka `views.py` yang ada pada subdirektori `main`, dan buatlah fungsi baru bernama `edit_product` dan `delete_mod` yang menerima parameter `request` dan `id` dan tambahkan import pada bagian atas seperti berikut.
+
+```python
+from django.shortcuts import .., reverse
+from django.http import .., HttpResponseRedirect
+
+...
+
+def edit_product(request, id):
+    product = Product.objects.get(pk = id)
+    form = ProductEntryForm(request.POST or None, instance=product)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return HttpResponseRedirect(reverse('main:show_model'))
+
+    context = {'form': form}
+    return render(request, "edit_product.html", context) 
+
+def delete_product(request, id):
+    product = Product.objects.get(pk = id)
+    product.delete()
+    return HttpResponseRedirect(reverse('main:show_model')) 
+```
+
+Lalu buatlah berkas HTML baru dengan nama `edit_product.html` pada subdirektori `main/templates`. 
+
+```python
+{% extends 'base.html' %}
+{% load static %}
+{% block meta %}
+<title>Edit</title>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<div class="flex flex-col min-h-screen bg-gray-100">
+  <div class="container mx-auto px-4 py-8 mt-16 max-w-xl">
+    <h1 class="text-3xl font-bold text-center mb-8 text-black">Edit Mood Entry</h1>
+  
+    <div class="bg-white rounded-lg p-6 form-style">
+      <form method="POST" class="space-y-6">
+          {% csrf_token %}
+          {% for field in form %}
+              <div class="flex flex-col">
+                  <label for="{{ field.id_for_label }}" class="mb-2 font-semibold text-gray-700">
+                      {{ field.label }}
+                  </label>
+                  <div class="w-full">
+                      {{ field }}
+                  </div>
+                  {% if field.help_text %}
+                      <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
+                  {% endif %}
+                  {% for error in field.errors %}
+                      <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                  {% endfor %}
+              </div>
+          {% endfor %}
+          <div class="flex justify-center mt-6">
+              <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 ease-in-out w-full">
+                  Edit Product
+              </button>
+          </div>
+      </form>
+  </div>
+  </div>
+</div>
+{% endblock %}
+```
+
+Buka `urls.py` yang berada pada direktori `main` dan import fungsi `edit_product` dan `delete_product` yang sudah dibuat dan tambahkan path url ke dalam `urlpatterns` untuk mengakses fungsi yang sudah di import.
+
+```python
+from main.views import ..., edit_mood, delete_mood
+
+urlpatterns = [
+    ...
+    path('edit-product/<uuid:id>', edit_product, name='edit_product'),
+    path('delete/<uuid:id>', delete_product, name='delete_product'),
+]
+```
+
+Terakhir, bukalah berkas `main.html` yang ada pada folder `main/templates` dan ubahlah kode yang sudah ada menjadi seperti berikut agar terdapat tombol hapus untuk setiap produk.
+
+```python
+...
+<tr>
+    ...
+    <td>
+        <a href="{% url 'main:edit_mood' mood_entry.pk %}">
+            <button>
+                Edit
+            </button>
+        </a>
+    </td>
+    <td>
+        <a href="{% url 'main:delete_mood' mood_entry.pk %}">
+            <button>
+                Delete
+            </button>
+        </a>
+    </td>
+</tr>
+...
+```
+
+### 2. Membuat navigation bar (navbar) untuk fitur-fitur pada aplikasi yang responsive terhadap perbedaan ukuran device, khususnya mobile dan desktop.
+
+Buatlah berkas HTML baru dengan nama `navbar.html` pada folder `templates/` di root directory. 
+
+```python
+{% load static %}
+
+<nav class="bg-black shadow-lg fixed top-0 left-0 z-40 w-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center">
+        <!-- Nama Zoldyck -->
+        <h1 class="text-white font-bold text-lg">Zoldyck</h1>
+      </div>
+      <!-- Navbar Links -->
+      <ul class="hidden md:flex space-x-6">
+        <li><a href="#" class="text-gray-300 text-sm hover:text-white transition duration-300">Home</a></li>
+        <li><a href="#" class="text-gray-300 text-sm hover:text-white transition duration-300">Products</a></li>
+        <li><a href="#" class="text-gray-300 text-sm hover:text-white transition duration-300">Cart</a></li>
+        <li><a href="#" class="text-gray-300 text-sm hover:text-white transition duration-300">Contact</a></li>
+      </ul>
+      <!-- User Authentication Links -->
+      <div class="hidden md:flex items-center space-x-4">
+        {% if user.is_authenticated %}
+          <!-- Welcome User and Logout Button -->
+          <span class="text-gray-300 text-sm">Welcome, {{ user.username }}</span>
+          <a href="{% url 'main:logout' %}" class="text-white bg-black hover:bg-gray-800 font-bold py-2 px-4 rounded transition duration-300">
+            ⏻
+          </a>
+        {% else %}
+          <!-- Login and Register Buttons -->
+          <a href="{% url 'main:login' %}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+            Login
+          </a>
+          <a href="{% url 'main:register' %}" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+            Register
+          </a>
+        {% endif %}
+      </div>
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden flex items-center">
+        <button class="mobile-menu-button">
+          <svg class="w-6 h-6 text-white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu hidden md:hidden px-4 w-full">
+    <ul class="space-y-1">
+      <li><a href="#" class="block text-gray-300 hover:text-white py-2 px-4 rounded">Home</a></li>
+      <li><a href="#" class="block text-gray-300 hover:text-white py-2 px-4 rounded">Products</a></li>
+      <li><a href="#" class="block text-gray-300 hover:text-white py-2 px-4 rounded">Cart</a></li>
+      <li><a href="#" class="block text-gray-300 hover:text-white py-2 px-4 rounded">Contact</a></li>
+      {% if user.is_authenticated %}
+        <li><span class="block text-gray-300 py-2 px-4">Welcome, {{ user.username }}</span></li>
+        <li><a href="{% url 'main:logout' %}" class="block text-center text-white bg-black hover:bg-gray-800 font-bold py-2 px-4 rounded transition duration-300">
+          ⏻
+        </a></li>
+      {% else %}
+        <li><a href="{% url 'main:login' %}" class="block text-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">Login</a></li>
+        <li><a href="{% url 'main:register' %}" class="block text-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">Register</a></li>
+      {% endif %}
+    </ul>
+  </div>
+
+  <!-- Script for Mobile Menu Toggle -->
+  <script>
+    const btn = document.querySelector("button.mobile-menu-button");
+    const menu = document.querySelector(".mobile-menu");
+
+    btn.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+    });
+  </script>
+</nav>
+```
+
+Kemudian, tautkan navbar tersebut ke dalam `main.html`, `create_mood_entry.html`, dan `edit_mood.html` yang berada di subdirektori `main/templates/` dengan menggunakan tags include:
+
+```pyhton
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+...
+{% endblock content%}
+```
+
+### 3. Kustomisasi halaman daftar product menjadi lebih menarik dan responsive.
+
+Jika pada aplikasi belum ada product yang tersimpan, halaman daftar product akan menampilkan gambar dan pesan bahwa belum ada product yang terdaftar.
+
+
+Jika sudah ada product yang tersimpan, halaman daftar product akan menampilkan detail setiap product dengan menggunakan card.
+
+
+Untuk setiap card product, buatlah dua buah button untuk mengedit dan menghapus product pada card tersebut!
+
+
+Buatlah navigation bar (navbar) untuk fitur-fitur pada aplikasi yang responsive terhadap perbedaan ukuran device, khususnya mobile dan desktop.
+
+**Kondisi navbar untuk versi mobile:**
+
+
+**Kondisi navbar untuk versi desktop:**
+
+
 <br>
 <br>
 <hr>
 
-# Tugas 4
+# PERTANYAAN
+
+###  Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
+
+Dalam CSS, urutan prioritas atau **CSS specificity** menentukan aturan mana yang akan diterapkan pada elemen HTML ketika ada beberapa selektor yang dapat berlaku. Setiap jenis selektor dalam CSS memiliki bobot atau nilai specific yang berbeda, dan aturan dengan specificitas yang lebih tinggi akan diutamakan. Urutan prioritas ini ditentukan oleh empat komponen utama:
+
+1. **Inline styles**: Gaya yang langsung diterapkan di elemen HTML dengan menggunakan atribut `style`. Misalnya, `<div style="color: red;">`. Inline styles memiliki specificitas tertinggi dibandingkan selektor lain.
+
+2. **ID selectors**: Selektor yang menggunakan ID elemen HTML dengan karakter `#` diikuti oleh nama ID, seperti `#my-id`. Selektor ID memiliki specificitas tinggi karena ID unik untuk setiap elemen.
+
+3. **Class selectors, attribute selectors, dan pseudo-classes**: Selektor ini memiliki specificitas yang lebih rendah dibandingkan ID. Ini mencakup:
+   - **Class selectors** menggunakan titik `.` diikuti nama kelas, seperti `.my-class`.
+   - **Attribute selectors** menargetkan elemen dengan atribut tertentu, seperti `[type="text"]`.
+   - **Pseudo-classes** menargetkan keadaan khusus elemen, seperti `:hover` atau `:nth-child(2)`.
+
+4. **Type selectors dan pseudo-elements**: Ini adalah selektor dengan specificitas paling rendah. Mereka mencakup:
+   - **Type selectors** (atau selektor elemen) menargetkan elemen HTML berdasarkan nama tag, seperti `div`, `p`, atau `h1`.
+   - **Pseudo-elements** menargetkan bagian tertentu dari elemen, seperti `::before`, `::after`.
+
+
+Cara Menghitung Specificity:
+
+Specificity dinyatakan sebagai empat angka terpisah yang diurutkan secara hirarkis dari kiri ke kanan:
+
+- Inline styles dihitung sebagai `1,0,0,0`.
+- ID selectors dihitung sebagai `0,1,0,0`.
+- Class selectors, attribute selectors, dan pseudo-classes dihitung sebagai `0,0,1,0`.
+- Type selectors dan pseudo-elements dihitung sebagai `0,0,0,1`.
+
+Contohnya:
+- Inline style: `1,0,0,0`.
+- `#my-id`: `0,1,0,0`.
+- `.my-class`: `0,0,1,0`.
+- `div`: `0,0,0,1`.
+
+Jika ada beberapa aturan CSS yang berlaku untuk elemen yang sama, browser akan menerapkan aturan dengan nilai specificitas yang lebih tinggi.
+
+Urutan Penerapan Aturan CSS (Specificity Cascade):
+Jika beberapa aturan memiliki nilai specificitas yang sama, aturan yang muncul **paling akhir** dalam file CSS akan diterapkan. Jika ada beberapa aturan dengan specificitas yang berbeda, aturan dengan specificitas tertinggi akan diterapkan.
+
+***Contoh:***
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #my-id { color: blue; }        /* ID selector */
+    .my-class { color: green; }    /* Class selector */
+    p { color: red; }              /* Type selector */
+  </style>
+</head>
+<body>
+  <p id="my-id" class="my-class">Hello World!</p>
+</body>
+</html>
+```
+
+Pada contoh di atas:
+- `p` menggunakan type selector `p` dengan specificitas `0,0,0,1`.
+- `.my-class` menggunakan class selector dengan specificitas `0,0,1,0`.
+- `#my-id` menggunakan ID selector dengan specificitas `0,1,0,0`.
+
+Karena specificitas ID lebih tinggi dibanding class dan type selectors, teks "Hello World!" akan berwarna **biru** meskipun ada aturan class dan type selector lainnya.
+
+Urutan Tambahan: **!important**
+Deklarasi `!important` dapat digunakan untuk memaksa aturan CSS agar memiliki prioritas tertinggi, terlepas dari specificitasnya. Namun, ini harus digunakan dengan hati-hati karena dapat membuat pengelolaan CSS lebih sulit.
+
+***Contoh:***
+```css
+p { color: red !important; } /* This will override other selectors */
+```
+
+Pada kasus ini, meskipun ada aturan lain yang lebih spesifik, aturan dengan `!important` akan menang.
+
+***Kesimpulan***
+Urutan prioritas pengambilan CSS selector mengikuti specificitas yang dihitung berdasarkan:
+1. Inline styles (specificitas tertinggi),
+2. Selektor ID,
+3. Selektor class, atribut, dan pseudo-classes,
+4. Selektor elemen dan pseudo-elements (specificitas terendah).
+
+Jika dua atau lebih selektor memiliki specificitas yang sama, aturan yang didefinisikan paling akhir dalam stylesheet akan diutamakan. `!important` akan mengesampingkan semua specificitas kecuali ada `!important` lain yang bersaing, di mana specificitas juga menjadi faktor pertimbangan.
+
+<hr>
+
+
+###  Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design!
+
+**Responsive design** adalah konsep penting dalam pengembangan aplikasi web karena memungkinkan tampilan dan fungsionalitas situs web untuk menyesuaikan secara otomatis dengan berbagai ukuran layar dan perangkat, seperti smartphone, tablet, dan desktop. Seiring dengan peningkatan akses web melalui perangkat mobile, memiliki desain yang responsif menjadi krusial untuk memberikan pengalaman pengguna yang optimal dan memastikan aplikasi web dapat diakses di mana saja dan kapan saja.
+
+Berikut adalah beberapa alasan mengapa **responsive design** menjadi sangat penting:
+
+1. **Peningkatan Pengalaman Pengguna (User Experience)**
+   Responsive design memastikan bahwa pengguna mendapatkan tampilan dan fungsi yang sesuai dengan perangkat yang mereka gunakan. Navigasi yang lebih mudah, teks yang dapat dibaca, dan elemen interaktif yang tepat ukurannya membuat pengguna merasa nyaman dan tidak frustrasi, sehingga meningkatkan keterlibatan dan loyalitas pengguna.
+
+2. **Fleksibilitas Lintas Perangkat**
+   Dengan responsivitas, aplikasi web akan otomatis menyesuaikan tampilan dan tata letak ketika diakses dari perangkat yang berbeda, seperti laptop, tablet, atau ponsel. Ini meminimalkan kebutuhan untuk mengembangkan versi terpisah untuk perangkat mobile atau desktop, menghemat waktu dan biaya pengembangan.
+
+3. **SEO dan Kinerja di Mesin Pencari**
+   Mesin pencari seperti Google memberikan preferensi pada situs yang mobile-friendly. Dengan memiliki desain yang responsif, situs web akan mendapatkan peringkat lebih tinggi di hasil pencarian, terutama untuk pengguna yang mencari melalui perangkat mobile. Google juga menggunakan indeks mobile-first, artinya mereka terutama menilai versi mobile dari situs web.
+
+4. **Mengakomodasi Perubahan Tren Pengguna**
+   Pengguna internet saat ini mengakses konten melalui berbagai perangkat. Statistika menunjukkan bahwa jumlah pengguna internet mobile terus meningkat, sehingga desain yang hanya dioptimalkan untuk desktop akan kehilangan banyak pengunjung potensial. Desain responsif menjaga aplikasi tetap relevan seiring perubahan tren penggunaan.
+
+5. **Efisiensi Pengembangan dan Pemeliharaan**
+   Dengan hanya perlu memelihara satu versi kode yang berfungsi di semua perangkat, pengembang dapat mengurangi kompleksitas dalam pengembangan dan pemeliharaan aplikasi web. Tanpa perlu membuat dan mengelola situs terpisah untuk perangkat mobile dan desktop, proses pengembangan menjadi lebih efisien.
+
+Contoh Aplikasi yang Menerapkan dan Tidak Menerapkan Responsive Design
+
+1. **Aplikasi yang Sudah Menerapkan Responsive Design**:
+   - **Apple**: Website resmi Apple (https://www.apple.com) merupakan contoh klasik dari situs yang menerapkan responsive design. Baik di desktop maupun mobile, website ini menyesuaikan ukuran gambar, teks, dan tata letaknya secara otomatis sehingga tetap terlihat rapi dan mudah dinavigasi di berbagai perangkat.
+   - **Twitter**: Aplikasi web Twitter (https://www.twitter.com) juga sangat responsif, menyesuaikan tampilan feed, ikon, dan navigasi dengan ukuran layar yang berbeda-beda. Tampilan di smartphone tetap memberikan pengalaman yang optimal tanpa harus membuat aplikasi terpisah.
+
+2. **Aplikasi yang Belum Menerapkan Responsive Design**:
+   - **Contoh Situs Berita Lokal Lama**: Beberapa situs berita lokal lama masih belum menerapkan responsive design, sehingga ketika diakses melalui perangkat mobile, teks dan elemen-elemen situs tersebut terlalu kecil atau tata letaknya tidak sesuai. Pengguna harus melakukan zoom in dan scroll secara horizontal untuk membaca konten, yang mengakibatkan pengalaman pengguna yang buruk.
+   - **Situs Web Institusi Pendidikan Tertentu**: Beberapa situs universitas atau sekolah yang menggunakan desain lama tidak responsif, sehingga saat diakses melalui perangkat mobile, tampilannya kacau, menu tersembunyi, atau elemen penting sulit diakses.
+
+***Kesimpulan:***
+Responsive design sangat penting dalam pengembangan aplikasi web modern untuk memastikan pengalaman pengguna yang baik di berbagai perangkat, meningkatkan SEO, dan menghemat biaya pengembangan serta pemeliharaan. Dengan meningkatnya akses internet melalui perangkat mobile, situs yang tidak responsif akan ketinggalan dibandingkan kompetitornya yang sudah mengadopsi desain ini.
+
+<hr>
+
+### Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!
+
+**Margin**, **border**, dan **padding** adalah tiga properti penting dalam CSS yang digunakan untuk mengatur tata letak dan jarak antar elemen dalam sebuah halaman web. Masing-masing memiliki fungsi yang berbeda, namun semuanya membantu dalam mengontrol ruang di sekitar elemen.
+
+1. **Margin**
+   - **Definisi**: Margin adalah ruang kosong di luar batas (border) elemen. Margin digunakan untuk mengatur jarak antara elemen yang satu dengan elemen lainnya.
+   - **Fungsi**: Mengatur jarak antar elemen di luar elemen itu sendiri. Tidak mempengaruhi ukuran elemen, hanya menambah jarak dari elemen lain di sekitarnya.
+   - **Implementasi**: Anda dapat mengatur margin di semua sisi elemen (atas, kanan, bawah, kiri) atau secara spesifik untuk masing-masing sisi.
+   
+   **Contoh CSS:**
+   ```css
+   div {
+     margin: 20px; /* Margin di semua sisi sebesar 20px */
+   }
+
+   p {
+     margin-top: 10px;      /* Margin di sisi atas */
+     margin-right: 15px;    /* Margin di sisi kanan */
+     margin-bottom: 20px;   /* Margin di sisi bawah */
+     margin-left: 5px;      /* Margin di sisi kiri */
+   }
+   ```
+
+   **Properti Shorthand:**
+   ```css
+   div {
+     margin: 10px 15px 20px 5px; /* Atas, kanan, bawah, kiri */
+   }
+   ```
+
+2. **Border**
+   - **Definisi**: Border adalah garis yang mengelilingi konten elemen dan padding. Border berada di antara padding dan margin.
+   - **Fungsi**: Memberikan garis atau batas visual di sekitar elemen. Border dapat memiliki warna, ketebalan, dan gaya (seperti solid, dashed, atau dotted).
+   - **Implementasi**: Border dapat diterapkan di semua sisi elemen atau hanya pada sisi-sisi tertentu (atas, kanan, bawah, kiri).
+
+   **Contoh CSS:**
+   ```css
+   div {
+     border: 2px solid black; /* Border semua sisi dengan ketebalan 2px, gaya solid, dan warna hitam */
+   }
+
+   p {
+     border-top: 3px dashed red;    /* Border atas dengan gaya dashed */
+     border-right: 5px dotted blue; /* Border kanan dengan gaya dotted */
+   }
+   ```
+
+   **Properti Shorthand:**
+   ```css
+   div {
+     border: 2px dashed green; /* Ketebalan, gaya, dan warna */
+   }
+   ```
+
+3. **Padding**
+   - **Definisi**: Padding adalah ruang di dalam elemen antara konten dan border. Padding menambah ruang di dalam elemen tetapi tidak menambah ukuran elemen di luar.
+   - **Fungsi**: Mengatur ruang antara konten dan border. Padding berguna untuk memberikan ruang agar konten tidak menempel langsung pada batas border.
+   - **Implementasi**: Seperti margin, padding dapat diatur untuk semua sisi atau secara individual untuk sisi atas, kanan, bawah, dan kiri.
+
+   **Contoh CSS:**
+   ```css
+   div {
+     padding: 10px; /* Padding semua sisi sebesar 10px */
+   }
+
+   p {
+     padding-top: 5px;      /* Padding sisi atas */
+     padding-right: 10px;   /* Padding sisi kanan */
+     padding-bottom: 15px;  /* Padding sisi bawah */
+     padding-left: 20px;    /* Padding sisi kiri */
+   }
+   ```
+
+   **Properti Shorthand:**
+   ```css
+   div {
+     padding: 10px 20px 15px 5px; /* Atas, kanan, bawah, kiri */
+   }
+   ```
+
+***Diagram Hubungan Margin, Border, dan Padding***
+
+```
++----------------------------+    <-- Margin (ruang di luar elemen)
+|        margin              |
++----------------------------+    <-- Border (garis elemen)
+|         border             |
++----------------------------+    <-- Padding (ruang dalam elemen)
+|         padding            |
+|   +--------------------+   |   <-- Konten (teks, gambar, dsb.)
+|   |      Content       |   |
+|   +--------------------+   |
++----------------------------+
+```
+
+Perbedaan Utama:
+- **Margin** mengontrol ruang di luar elemen (antara elemen dengan elemen lain).
+- **Border** adalah garis yang mengelilingi elemen dan berada di antara padding dan margin.
+- **Padding** mengontrol ruang di dalam elemen, antara konten dan border.
+
+***Contoh Implementasi Semua Properti:***
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Margin, Border, and Padding Example</title>
+  <style>
+    .box {
+      margin: 20px;         /* Margin di luar elemen */
+      border: 2px solid black; /* Border hitam dengan ketebalan 2px */
+      padding: 15px;        /* Padding di dalam elemen */
+      background-color: lightblue; /* Warna latar belakang elemen */
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    Ini adalah contoh elemen dengan margin, border, dan padding.
+  </div>
+
+</body>
+</html>
+```
+
+Pada contoh di atas:
+- **Margin** menambah ruang di luar elemen `.box` dari elemen lain.
+- **Border** memberikan garis di sekitar elemen.
+- **Padding** menambah ruang antara teks konten dan border.
+
+***Kesimpulan:***
+- **Margin** digunakan untuk menambah jarak antara elemen dan sekelilingnya.
+- **Border** digunakan untuk menambah batas atau garis di sekitar elemen.
+- **Padding** digunakan untuk menambah ruang antara konten elemen dan border.
+ 
+Dengan menggabungkan ketiganya, kita bisa mengontrol penempatan dan ruang dari elemen-elemen dalam tata letak halaman web.
+
+<hr>
+
+### Jelaskan konsep flex box dan grid layout beserta kegunaannya!
+
+**Flexbox** dan **Grid Layout** adalah dua sistem tata letak yang sangat kuat dalam CSS yang digunakan untuk mengatur elemen-elemen dalam sebuah halaman web. Keduanya memiliki tujuan yang serupa, yaitu mempermudah pengaturan tata letak, tetapi mereka digunakan untuk kasus-kasus yang berbeda dan menawarkan pendekatan yang berbeda pula dalam tata letak halaman.
+
+**1. Flexbox (Flexible Box Layout)**
+
+**Konsep Flexbox**
+Flexbox adalah sistem tata letak satu dimensi yang dirancang untuk mengatur elemen-elemen dalam satu arah, baik secara **horizontal** (baris) atau **vertikal** (kolom). Flexbox sangat berguna untuk mengatur tata letak elemen yang berubah-ubah ukurannya, baik itu elemen yang bersifat responsif maupun elemen dengan konten dinamis.
+
+Flexbox terdiri dari dua komponen utama:
+- **Flex container**: Elemen pembungkus yang memiliki properti `display: flex;`. Flex container akan menentukan bagaimana elemen-elemen di dalamnya diatur.
+- **Flex items**: Elemen-elemen anak di dalam flex container yang akan diatur berdasarkan aturan flexbox.
+
+Kegunaan Flexbox:
+- Mengatur elemen dalam satu dimensi (baris atau kolom).
+- Membuat elemen responsif secara otomatis sesuai dengan ukuran kontainer tanpa menggunakan banyak media query.
+- Mengatur posisi elemen dengan mudah menggunakan properti seperti `justify-content` dan `align-items`.
+- Mengatur perataan dan distribusi ruang antara elemen secara fleksibel.
+
+Properti Utama Flexbox:
+- **display: flex;** – Mengubah elemen menjadi flex container.
+- **flex-direction** – Menentukan arah aliran elemen (row, row-reverse, column, column-reverse).
+- **justify-content** – Mengatur posisi elemen di sepanjang sumbu utama (horizontal jika flex-direction adalah row).
+- **align-items** – Mengatur perataan elemen di sepanjang sumbu silang (vertikal jika flex-direction adalah row).
+- **flex-wrap** – Menentukan apakah elemen akan membungkus atau tetap dalam satu baris.
+- **align-self** – Mengatur perataan elemen individual di sepanjang sumbu silang.
+
+**2. Grid Layout**
+
+**Konsep Grid Layout**
+CSS Grid Layout adalah sistem tata letak dua dimensi yang memungkinkan pengaturan elemen secara **horizontal** dan **vertikal**. Grid memberikan kontrol yang lebih baik untuk membuat tata letak kompleks yang melibatkan baris dan kolom, menjadikannya alat yang sangat kuat untuk membuat grid pada halaman web.
+
+Dengan Grid Layout, kita dapat menentukan jumlah baris dan kolom yang spesifik serta mendefinisikan ukuran masing-masing elemen dalam grid. Elemen dalam grid dapat ditempatkan di baris dan kolom tertentu, atau bisa membentang beberapa baris atau kolom.
+
+Kegunaan Grid Layout:
+- Mengatur elemen dalam dua dimensi (baris dan kolom).
+- Membuat tata letak yang kompleks, seperti tata letak halaman yang terdiri dari header, sidebar, konten utama, dan footer.
+- Mengontrol ukuran baris dan kolom secara eksplisit atau otomatis.
+- Mengatur elemen agar menempati beberapa baris atau kolom sekaligus (spanning).
+- Sangat fleksibel untuk tata letak yang memerlukan struktur grid yang jelas, seperti galeri gambar, dashboard, atau halaman yang memerlukan tata letak terstruktur.
+
+Properti Utama Grid Layout:
+- **display: grid;** – Mengubah elemen menjadi grid container.
+- **grid-template-columns** – Menentukan jumlah dan ukuran kolom dalam grid.
+- **grid-template-rows** – Menentukan jumlah dan ukuran baris dalam grid.
+- **grid-column** – Menentukan tempat elemen di grid berdasarkan kolom.
+- **grid-row** – Menentukan tempat elemen di grid berdasarkan baris.
+- **gap** – Mengatur jarak antar elemen grid.
+
+
+Perbedaan Antara Flexbox dan Grid Layout
+
+| **Flexbox**                     | **Grid Layout**                   |
+|----------------------------------|-----------------------------------|
+| Sistem tata letak **satu dimensi** (horizontal atau vertikal) | Sistem tata letak **dua dimensi** (horizontal dan vertikal) |
+| Cocok untuk tata letak yang fleksibel dan responsif dalam satu arah (misalnya baris produk) | Cocok untuk tata letak yang kompleks dengan banyak elemen dan struktur grid jelas |
+| Elemen diatur berdasarkan urutan dalam HTML | Elemen bisa diatur di baris atau kolom mana saja tanpa memperhatikan urutan HTML |
+| Sangat mudah untuk tata letak sederhana seperti menu navigasi atau galeri foto | Lebih cocok untuk struktur halaman penuh seperti dashboard atau layout yang memerlukan header, sidebar, konten, dan footer |
+| Tidak ada kontrol eksplisit atas baris | Mengizinkan kontrol eksplisit pada baris dan kolom |
+
+**Kapan Menggunakan Flexbox atau Grid?**
+- Gunakan **Flexbox** jika tata letak Anda membutuhkan fleksibilitas dalam satu dimensi, misalnya ketika Anda ingin mengatur elemen secara dinamis berdasarkan ruang yang tersedia (misalnya, menu, galeri produk).
+- Gunakan **Grid Layout** jika Anda memerlukan tata letak yang lebih kompleks dengan elemen yang ditempatkan di beberapa baris dan kolom, seperti layout halaman dengan bagian header, konten, sidebar, dan footer yang jelas.
+
+***Kesimpulan***
+Flexbox dan Grid Layout menawarkan pendekatan yang berbeda untuk menyusun tata letak halaman web. Flexbox sangat cocok untuk tata letak sederhana yang fleksibel dalam satu arah, sedangkan Grid Layout memberikan kontrol penuh untuk mengatur elemen secara dua dimensi. Penggunaan keduanya tergantung pada kompleksitas dan kebutuhan tata letak halaman yang sedang dikembangkan.
+
+<br>
+<br>
+<hr>
+
+</details>
+
+
+
+<details>
+  <summary><strong>Tugas 4</strong></summary>
 
 ## Langkah-langkah Pengimplementasian
 ### 1. Mengimplementasikan fungsi registrasi, login, dan logout
@@ -431,7 +997,12 @@ Untuk mengatasi masalah keamanan ini, Django menyediakan beberapa perlindungan:
 <br>
 <hr>
 
-# Tugas 3
+</details>
+
+
+
+<details>
+  <summary><strong>Tugas 3</strong></summary>
 
 ## Langkah-langkah Pengimplementasian
 ### 1. Persiapan dan langkah awal sebelum mengerjakan Tugas 3
@@ -695,7 +1266,12 @@ Menambahkan `csrf_token` ke form Django membantu memastikan bahwa permintaan yan
 <br>
 <hr>
 
-# Tugas 2
+</details>
+
+
+
+<details>
+  <summary><strong>Tugas 2</strong></summary>
 
 ## Langkah-langkah Pengimplementasian
 ### 1. Membuat sebuah proyek Django baru
@@ -870,7 +1446,8 @@ Django sering dipilih sebagai framework pengenalan dalam pembelajaran pengembang
 Model dalam Django disebut sebagai ORM (Object-Relational Mapping) karena ia menyediakan cara untuk memetakan objek Python ke dalam struktur tabel basis data relasional secara langsung. ORM memungkinkan pengembang untuk bekerja dengan database menggunakan objek Python, tanpa harus menulis kueri SQL yang kompleks dan rawan kesalahan secara langsung. Dengan ORM, setiap model Django diwakili sebagai kelas Python, dan atribut dari kelas tersebut otomatis dipetakan ke kolom dalam tabel basis data. Fitur ini mengabstraksi detail teknis dari interaksi dengan basis data, membuat pengelolaan data menjadi lebih sederhana dan kode lebih mudah dipahami dan dirawat. ORM juga menyediakan fitur untuk migrasi basis data, yang memungkinkan perubahan pada model kode untuk diterapkan ke struktur basis data dengan mudah. Dengan cara ini, ORM memastikan konsistensi antara model kode dan tabel basis data, serta mengurangi potensi kesalahan dalam pengelolaan data. Secara keseluruhan, ORM mempermudah pengembang untuk bekerja dengan data dalam format yang lebih intuitif dan terintegrasi dengan bahasa pemrograman Python.
 
 
-
 <br>
 <br>
 <hr>
+
+</details>

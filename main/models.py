@@ -9,7 +9,7 @@ class Product(models.Model):
     description = models.TextField()
     service = models.CharField(max_length=255)
     experience = models.TextField()
-    rating = models.DecimalField(max_digits=3, decimal_places=2)
+    rating = models.DecimalField(max_digits=5, decimal_places=2)
     stock = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 

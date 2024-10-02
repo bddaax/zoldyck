@@ -28,8 +28,8 @@ def show_model(request):
         'npm': '2306152304',
         'app_name': 'Zoldyck Detective Services',
         'services': model,  # Only include products from the database
-        'last_login': request.COOKIES['last_login'],
         'user': request.user,
+        'last_login': request.COOKIES.get('last_login', 'No login record found'),
     }
 
     return render(request, 'main.html', context)
