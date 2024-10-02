@@ -225,6 +225,7 @@ Kemudian, tautkan navbar tersebut ke dalam `main.html`, `create_mood_entry.html`
 ### 3. Kustomisasi halaman daftar product menjadi lebih menarik dan responsive.
 
 Kustomisasi halaman login, register, dan tambah product semenarik mungkin.
+
 **Login**
 <img width="1440" alt="Screenshot 2024-10-02 at 11 24 42" src="https://github.com/user-attachments/assets/2cc0fa9a-2743-4f9f-9c0e-8aca55162033">
 
@@ -234,6 +235,7 @@ Kustomisasi halaman login, register, dan tambah product semenarik mungkin.
 
 
 **Daftar Produk**
+
 Jika pada aplikasi belum ada product yang tersimpan, halaman daftar product akan menampilkan gambar dan pesan bahwa belum ada product yang terdaftar.
 <img width="1440" alt="Screenshot 2024-10-02 at 11 28 06" src="https://github.com/user-attachments/assets/a2f15f2d-561f-4f22-8af2-e0da7eab307b">
 
@@ -247,6 +249,7 @@ Untuk setiap card product, buatlah dua buah button untuk mengedit dan menghapus 
 
 
 Buatlah navigation bar (navbar) untuk fitur-fitur pada aplikasi yang responsive terhadap perbedaan ukuran device, khususnya mobile dan desktop.
+
 **Kondisi navbar untuk versi mobile:**
 <img width="971" alt="Screenshot 2024-10-02 at 11 32 40" src="https://github.com/user-attachments/assets/c9c46728-a34d-4e81-a8fd-ec221d86bd62">
 <img width="923" alt="Screenshot 2024-10-02 at 11 33 14" src="https://github.com/user-attachments/assets/3db92999-fe56-42d1-9ae2-84a32aba7087">
