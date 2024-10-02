@@ -224,21 +224,38 @@ Kemudian, tautkan navbar tersebut ke dalam `main.html`, `create_mood_entry.html`
 
 ### 3. Kustomisasi halaman daftar product menjadi lebih menarik dan responsive.
 
+Kustomisasi halaman login, register, dan tambah product semenarik mungkin.
+**Login**
+![Uploading Screenshot 2024-10-02 at 11.24.42.png…]()
+
+**Register**
+![Uploading Screenshot 2024-10-02 at 11.25.39.png…]()
+
+**Daftar Produk**
+![Uploading Screenshot 2024-10-02 at 11.27.01.png…]()
+
+
 Jika pada aplikasi belum ada product yang tersimpan, halaman daftar product akan menampilkan gambar dan pesan bahwa belum ada product yang terdaftar.
+![Uploading Screenshot 2024-10-02 at 11.28.06.png…]()
 
 
 Jika sudah ada product yang tersimpan, halaman daftar product akan menampilkan detail setiap product dengan menggunakan card.
+![Uploading Screenshot 2024-10-02 at 11.29.31.png…]()
 
 
 Untuk setiap card product, buatlah dua buah button untuk mengedit dan menghapus product pada card tersebut!
+![Uploading Screenshot 2024-10-02 at 11.31.20.png…]()
 
 
 Buatlah navigation bar (navbar) untuk fitur-fitur pada aplikasi yang responsive terhadap perbedaan ukuran device, khususnya mobile dan desktop.
-
 **Kondisi navbar untuk versi mobile:**
+![Uploading Screenshot 2024-10-02 at 11.32.40.png…]()
+![Uploading Screenshot 2024-10-02 at 11.33.14.png…]()
 
 
 **Kondisi navbar untuk versi desktop:**
+![Uploading Screenshot 2024-10-02 at 11.31.57.png…]()
+![Uploading Screenshot 2024-10-02 at 11.27.01.png…]()
 
 
 <br>
