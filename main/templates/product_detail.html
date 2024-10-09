@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="bg-[#FBFBFD] min-h-screen">
+    <!-- Navigation back button -->
+    <div class="container mx-auto px-4 pt-8">
+        <a href="{% url 'main:show_model' %}" class="inline-flex items-center text-[#0066CC] hover:underline">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Back to Services
+        </a>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="w-full h-[70vh] relative overflow-hidden mt-4">
+        {% if product.photo %}
+            <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+        {% else %}
+            <img src="{% static 'image/placeholder.png' %}" alt="{{ product.name }}" class="w-full h-full object-cover">
+        {% endif %}
+        <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 right-0 text-center p-8 text-white">
+            <h1 class="text-5xl font-semibold mb-4">{{ product.name }}</h1>
+            <p class="text-2xl font-medium">{{ product.service }}</p>
+        </div>
+    </div>
+
+    <!-- Content Sections -->
+    <div class="container mx-auto px-4 py-16 max-w-4xl">
+        <!-- Price and Stock -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+            <div class="text-center">
+                <h2 class="text-lg text-gray-500 mb-2">Price</h2>
+                <p class="text-4xl font-semibold">Rp {{ product.price }}</p>
+            </div>
+            <div class="text-center">
+                <h2 class="text-lg text-gray-500 mb-2">Availability</h2>
+                <p class="text-4xl font-semibold">{{ product.stock }} slots</p>
+            </div>
+        </div>
+
+        <!-- Rating -->
+        <div class="mb-16 text-center">
+            <h2 class="text-lg text-gray-500 mb-4">Customer Satisfaction</h2>
+            <div class="flex justify-center items-center">
+                <span class="text-4xl font-semibold mr-4">{{ product.rating }}%</span>
+                <div class="w-48 bg-gray-200 rounded-full h-1">
+                    <div class="bg-gray-900 h-1 rounded-full" style="width: {{ product.rating }}%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 text-center">About This Service</h2>
+            <p class="text-lg text-gray-600 leading-relaxed text-center max-w-2xl mx-auto">
+                {{ product.description }}
+            </p>
+        </div>
+
+        <!-- Experience -->
+        <div class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 text-center">Our Experience</h2>
+            <p class="text-lg text-gray-600 leading-relaxed text-center max-w-2xl mx-auto">
+                {{ product.experience }}
+            </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col items-center space-y-4">
+            <button onclick="showEditConfirmation()" 
+                    class="w-full sm:w-auto inline-flex justify-center items-center px-8 py-3 border border-gray-300 text-base font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 transition duration-300 ease-in-out transform hover:-translate-y-1">
+                Edit Service
+            </button>
+            <button onclick="showDeleteConfirmation()" 
+                    class="w-full sm:w-auto inline-flex justify-center items-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-white bg-gray-900 hover:bg-gray-800 transition duration-300 ease-in-out transform hover:-translate-y-1">
+                Delete Service
+            </button>
+        </div>
+
+        <!-- Edit Confirmation Modal -->
+        <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+                <h3 class="text-2xl font-semibold mb-4">Edit Service</h3>
+                <p class="text-gray-600 mb-6">You're about to edit this service. Would you like to proceed?</p>
+                <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
+                    <button onclick="hideEditConfirmation()" 
+                            class="px-6 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition">
+                        Cancel
+                    </button>
+                    <a href="{% url 'main:edit_product' product.id %}" 
+                    class="px-6 py-2 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition text-center">
+                        Continue to Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+                <h3 class="text-2xl font-semibold mb-4">Delete Service</h3>
+                <p class="text-gray-600 mb-6">Are you sure you want to delete this service? This action cannot be undone.</p>
+                <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
+                    <button onclick="hideDeleteConfirmation()" 
+                            class="px-6 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition">
+                        Cancel
+                    </button>
+                    <a href="{% url 'main:delete_product' product.id %}" 
+                    class="px-6 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition text-center">
+                        Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showEditConfirmation() {
+        document.getElementById('editModal').classList.remove('hidden');
+    }
+    
+    function hideEditConfirmation() {
+        document.getElementById('editModal').classList.add('hidden');
+    }
+
+    function showDeleteConfirmation() {
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+    
+    function hideDeleteConfirmation() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+</script>
+{% endblock content %}

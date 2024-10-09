@@ -1,43 +1,46 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block meta %}
-<title>Create Product</title>
-{% endblock meta %}
 
 {% block content %}
-{% include 'navbar.html' %}
-
-<div class="flex flex-col min-h-screen bg-gray-100">
-  <div class="container mx-auto px-4 py-8 mt-16 max-w-xl">
-    <h1 class="text-3xl font-bold text-center mb-8 text-black">Create Product</h1>
-  
-    <div class="bg-white shadow-md rounded-lg p-6 form-style">
-      <form method="POST" class="space-y-6">
-        {% csrf_token %}
-        {% for field in form %}
-          <div class="flex flex-col">
-            <label for="{{ field.id_for_label }}" class="mb-2 font-semibold text-gray-700">
-              {{ field.label }}
-            </label>
-            <div class="w-full">
-              {{ field }}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">Add New Product</h1>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div class="mb-4">
+                <label for="{{ field.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">
+                    {{ field.label }}
+                </label>
+                
+                {% if field.field.widget.input_type == 'file' %}
+                    {{ field }}
+                {% else %}
+                    <input type="{{ field.field.widget.input_type }}" 
+                           name="{{ field.html_name }}" 
+                           id="{{ field.id_for_label }}"
+                           {% if field.value %}value="{{ field.value }}"{% endif %}
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                           {% if field.field.required %}required{% endif %}>
+                {% endif %}
+                
+                {% if field.errors %}
+                <p class="text-red-500 text-xs italic">{{ field.errors.0 }}</p>
+                {% endif %}
             </div>
-            {% if field.help_text %}
-              <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
-            {% endif %}
-            {% for error in field.errors %}
-              <p class="mt-1 text-sm text-red-600">{{ error }}</p>
             {% endfor %}
-          </div>
-        {% endfor %}
-        <div class="flex justify-center mt-6">
-          <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 ease-in-out w-full">
-            Create Product
-          </button>
-        </div>
-      </form>
+            
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Add Product
+                </button>
+                <a href="{% url 'main:show_model' %}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                    Cancel
+                </a>
+            </div>
+        </form>
     </div>
-  </div>
 </div>
-
 {% endblock %}

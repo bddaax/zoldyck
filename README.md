@@ -17,6 +17,367 @@ Experience Zoldyck in action by visiting our live application: [Explore Zoldyck 
 
 ## Pertanyaan
 
+<details>
+  <summary><strong>Tugas 6</strong></summary>
+
+## Langkah-langkah Pengimplementasian
+### Mengubah Tugas 5 Menjadi Menggunakan AJAX GET dan AJAX POST
+
+**Membuat Fungsi untuk Menambahkan Mood dengan AJAX**
+Tambahkan kedua impor berikut pada file `views.py` dan buatlah fungsi baru pada `views.py` dengan nama `add_mood_entry_ajax` yang menerima parameter `request` seperti berikut.
+
+```python
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
+...
+
+@csrf_exempt
+@require_POST
+def add_product_ajax(request):
+    try:
+        # Log the incoming data
+        print("Received POST data:", request.POST)
+        print("Received FILES:", request.FILES)
+
+        name = request.POST.get("name")
+        price = request.POST.get("price")
+        description = request.POST.get("description")
+        service = request.POST.get("service")
+        experience = request.POST.get("experience")
+        rating = request.POST.get("rating")
+        stock = request.POST.get("stock")
+        photo = request.FILES.get("photo")
+        user = request.user
+
+        new_product = Product(
+            name=name,
+            price=price,
+            description=description,
+            service=service,
+            experience=experience,
+            rating=rating,
+            stock=stock,
+            user=user
+        )
+        if photo:
+            new_product.photo = photo
+        new_product.save()
+
+        # Return the new product data as JSON
+        return HttpResponse(
+            serializers.serialize('json', [new_product]),
+            content_type='application/json',
+        )
+    except Exception as e:
+        return HttpResponse(str(e), status=500)
+```
+
+**Menambahkan Routing Untuk Fungsi add_mood_entry_ajax**
+
+Buka `urls.py` yang ada pada subdirektori main, impor fungsi `add_product_ajax` dan tambahkan path url ke dalam urlpatterns untuk mengakses fungsi yang sudah diimpor.
+
+```python
+from main.views import ..., add_mood_entry_ajax
+
+...
+
+urlpatterns = [
+    ...
+    path('create-product-ajax/', views.add_product_ajax, name='add_product_ajax'),
+]
+```
+
+**Menampilkan Data Mood Entry dengan fetch() API**
+
+Bukalah berkas `views.py` dan hapus dua baris berikut.
+
+```python
+model = Product.objects.filter(user=request.user)
+
+...
+
+'model': services,
+```
+
+Bukalah berkas `views.py` dan ubahlah baris pertama views untuk `show_json` dan `show_xml` seperti berikut.
+
+```python
+data = Product.objects.filter(user=request.user)```
+
+Bukalah berkas `main.html`. Hapus bagian block conditional `services` untuk menampilkan `card_product` ketika kosong atau tidak. Untuk memperjelas, inilah block kode yang perlu kamu hapus.
+
+```python
+...
+{% if not services %}
+    <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+        <img src="{% static 'image/zoldyck-family.png' %}" alt="Sad face" class="w-32 h-32 mb-4"/>
+        <p class="text-center text-gray-600 mt-4">Belum ada jasa pada Zoldyck Detective Services.</p>
+    </div>
+    {% else %}
+    <!-- Only card_product is inside grid with 2 columns -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {% for product in services %}
+        {% include "card_product.html" %}
+        {% endfor %}
+    </div>
+    {% endif %}
+...
+```
+
+Setelah menghapus block conditional tersebut, tambahkan potongan kode ini di tempat yang sama.
+
+```python
+...
+<div id="product_card"></div>
+...
+```
+
+Buatlah block `<script>` di bagian bawah berkas (sebelum `{% endblock content %}`) dan buatlah fungsi baru pada block `<script>` tersebut dengan nama `getProduct`, `refreshProducts` yang digunakan untuk me-refresh data moods secara asinkronus, `addProduct` untuk menambahkan Data Product dengan AJAX, dan fungsi-fungsi JavaScript agar modal dapat berfungsi, apabiila menggunakan vanilla Tailwind. Serta, tambahkan sebuah event listener pada form yang ada di modal untuk menjalankan fungsi `addProduct()`.
+
+```python
+...
+<script>
+    const modal = document.getElementById('crudModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelButton = document.getElementById('cancelButton');
+    const submitButton = document.getElementById('submitProduct');
+
+    function showModal() {
+        modal.classList.remove('hidden');
+    }
+    
+    function hideModal() {
+        modal.classList.add('hidden');
+    }
+    
+    async function getProducts() {
+        return fetch("{% url 'main:show_json' %}").then((res) => res.json())
+    }
+    
+    async function addProduct() {
+        const form = document.getElementById('productForm');
+        const formData = new FormData(form);
+        
+        try {
+            const response = await fetch("{% url 'main:add_product_ajax' %}", {
+                method: "POST",
+                body: formData,
+            });
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            
+            const jsonResponse = await response.json();
+            console.log('Server response:', jsonResponse);  // For debugging
+            
+            form.reset();
+            hideModal();
+            await refreshProducts();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    async function refreshProducts() {
+        try {
+            const response = await fetch("{% url 'main:show_json' %}");
+            const products = await response.json();
+            
+            const productContainer = document.getElementById("product_cards");
+            productContainer.innerHTML = "";
+            
+            if (products.length === 0) {
+                productContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+                        <img src="{% static 'image/zoldyck-family.png' %}" alt="No products" class="w-32 h-32 mb-4"/>
+                        <p class="text-center text-gray-600 mt-4">Belum ada jasa pada Zoldyck Detective Services.</p>
+                    </div>
+                `;
+            } else {
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-8';
+                
+                products.forEach((item) => {
+                    const name = DOMPurify.sanitize(item.fields.name);
+                    const price = DOMPurify.sanitize(item.fields.price);
+                    const photoUrl = item.fields.photo ? `/media/${item.fields.photo}` : '{% static "image/placeholder.png" %}';
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105 duration-300';
+                    card.innerHTML = `
+                        <div class="relative">
+                            <img src="${photoUrl}" alt="${item.fields.name}" class="w-full h-64 object-cover">
+                            
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6 text-white">
+                                <h3 class="font-bold text-3xl mb-2">${item.fields.name}</h3>
+                                <p class="text-lg mb-4">${item.fields.service}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center p-6">
+                            <a href="/product/${item.pk}/" class="px-6 py-2 bg-blue-500 text-white text-lg font-medium rounded-full hover:bg-blue-600 transition">
+                                Selengkapnya
+                            </a>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+                productContainer.appendChild(grid);
+            }
+        } catch (error) {
+            console.error('Error refreshing products:', error);
+        }
+    }
+
+    // Make sure these event listeners are set up
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('submitProduct').addEventListener('click', addProduct);
+        document.getElementById('closeModalBtn').addEventListener('click', hideModal);
+        document.getElementById('cancelButton').addEventListener('click', hideModal);
+        refreshProducts();
+    });
+</script>
+```
+
+Ubahlah bagian tombol Add New Mood Entry dan tambahkan tombol baru untuk melakukan penambahan data dengan AJAX.
+
+```python
+...
+        <a href="{% url 'main:create_product_form' %}" 
+        class="inline-flex justify-center items-center px-8 py-3 border border-gray-300 text-base font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+            <span>Add New Product</span>
+            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+        </a>
+        <button 
+            data-modal-target="crudModal" 
+            data-modal-toggle="crudModal" 
+            class="inline-flex justify-center items-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            onclick="showModal();">
+            <span>Add New Product by AJAX</span>
+            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+        </button>
+...
+```
+
+**Menambahkan strip_tags untuk "Membersihkan" Data Baru**
+
+Bukalah berkas `views.py` dan `forms.py` dan tambahkan impor berikut.
+
+```python
+from django.utils.html import strip_tags
+```
+
+Pada fungsi `add_mood_entry_ajax` di `views.py`, gunakanlah fungsi `strip_tags` pada data name dan price sebelum data tersebut dimasukkan ke dalam Product.
+
+```python
+...
+@csrf_exempt
+@require_POST
+def add_product_ajax(request):
+    try:
+        # Log the incoming data
+        print("Received POST data:", request.POST)
+        print("Received FILES:", request.FILES)
+
+        name = strip_tags(request.POST.get("name"))
+        price = strip_tags(request.POST.get("price"))
+...
+```
+
+Pada class `ProductEntryForm` di `forms.py ` tambahkan kedua method berikut.
+
+```python
+...
+class ProductEntryForm(forms.ModelForm):
+    class Meta:
+...
+
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+        return strip_tags(name)
+
+    def clean_price(self):
+        price = self.cleaned_data["price"]
+        return strip_tags(price)
+```
+
+**Membersihkan Data dengan DOMPurify**
+
+Bukalah berkas `main.html` dan tambahkan potongan kode berikut pada block `meta`. Setelah itu, pada fungsi `refreshProduct` yang telah ditambahkan sebelumnya, tambahkan potongan kode berikut.
+
+```python
+{% block meta %}
+...
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+...
+{% endblock meta %}
+
+...
+
+<script>
+    ...
+    async function refreshProduct() {
+        ...
+        products.forEach((item) => {
+                    const name = DOMPurify.sanitize(item.fields.name);
+                    const price = DOMPurify.sanitize(item.fields.price);
+            ...
+        });
+        ...
+    }
+    ...
+</script>
+```
+
+<br>
+<br>
+<hr>
+
+# PERTANYAAN
+
+###  Manfaat Penggunaan JavaScript dalam Pengembangan Aplikasi Web
+1. **Interaktivitas**: JavaScript memungkinkan pengembang untuk membuat elemen interaktif di halaman web, seperti animasi, efek transisi, dan respons terhadap tindakan pengguna (seperti klik, hover, dll.).
+2. **Manipulasi DOM**: JavaScript dapat digunakan untuk memodifikasi konten dan struktur halaman web secara dinamis melalui Document Object Model (DOM). Ini memungkinkan pembaruan tanpa perlu memuat ulang halaman.
+3. **Pengelolaan Event**: JavaScript dapat mendengarkan dan merespons berbagai peristiwa, seperti input dari pengguna, sehingga aplikasi menjadi lebih responsif dan interaktif.
+4. **Asynchronous Operations**: Dengan fitur seperti AJAX, JavaScript dapat melakukan permintaan ke server tanpa harus memuat ulang halaman, memungkinkan pengambilan data secara dinamis.
+5. **Kompatibilitas**: JavaScript didukung oleh semua browser modern, sehingga memudahkan pengembang untuk menciptakan aplikasi web yang dapat diakses oleh berbagai pengguna.
+
+<hr>
+
+
+### Fungsi `await` pada `fetch()`
+- **Fungsi `await`**: Ketika digunakan dengan `fetch()`, `await` digunakan untuk menunggu Promise yang dihasilkan oleh `fetch()` untuk menyelesaikan sebelum melanjutkan eksekusi kode berikutnya. Ini membuat kode lebih mudah dibaca dan ditulis karena menghindari callback yang kompleks.
+  
+- **Apa yang Terjadi Jika Tidak Menggunakan `await`**: Jika kita tidak menggunakan `await`, eksekusi kode akan terus berlanjut tanpa menunggu respons dari server. Ini berarti bahwa jika kita mencoba untuk menggunakan data yang seharusnya diperoleh dari `fetch()` sebelum Promise tersebut selesai, kita akan mendapatkan `undefined` atau kesalahan karena data tersebut belum siap.
+
+<hr>
+
+
+### Penggunaan Decorator `csrf_exempt` pada View untuk AJAX POST
+- **CSRF Protection**: CSRF (Cross-Site Request Forgery) adalah serangan di mana pengguna tidak sah dapat mengirim permintaan yang tidak diinginkan atas nama pengguna yang sudah terautentikasi. Django secara default melindungi semua form dan permintaan POST dengan token CSRF.
+  
+- **Mengapa `csrf_exempt` Diperlukan**: Saat menggunakan AJAX untuk mengirimkan permintaan POST, kita mungkin tidak selalu mengirimkan token CSRF. Menggunakan `@csrf_exempt` pada view yang menangani permintaan AJAX POST memungkinkan kita untuk melewati pemeriksaan CSRF ini. Namun, ini harus dilakukan dengan hati-hati dan hanya jika kita yakin bahwa tidak ada risiko keamanan yang terlibat.
+
+<hr>
+
+
+### Pembersihan Data Input Pengguna di Backend
+1. **Keamanan**: Mengandalkan pembersihan data di frontend saja tidak cukup. Pengguna dapat memanipulasi data yang dikirim dari frontend, sehingga validasi di backend sangat penting untuk memastikan integritas data.
+2. **Konsistensi**: Pembersihan dan validasi data di backend memastikan bahwa semua data yang diterima oleh server sudah sesuai dengan yang diharapkan, terlepas dari bagaimana data tersebut dihasilkan di frontend.
+3. **Pencegahan Serangan**: Validasi di backend dapat mencegah berbagai serangan, seperti SQL Injection dan XSS (Cross-Site Scripting), yang dapat terjadi jika data tidak dibersihkan dengan benar.
+4. **Pengalaman Pengguna**: Dengan pembersihan data di backend, kita dapat memberikan umpan balik yang tepat kepada pengguna jika ada kesalahan dalam data yang mereka kirim, yang dapat meningkatkan pengalaman pengguna secara keseluruhan.
+
+
+<br>
+<br>
+<hr>
+
+</details>
 
 <details>
   <summary><strong>Tugas 5</strong></summary>

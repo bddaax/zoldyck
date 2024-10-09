@@ -12,6 +12,7 @@ class Product(models.Model):
     rating = models.DecimalField(max_digits=5, decimal_places=2)
     stock = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='product_photos/', null=True, blank=True)
 
 
     def __str__(self):
