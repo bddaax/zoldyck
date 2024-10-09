@@ -5,9 +5,7 @@ from django.utils.html import strip_tags
 
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from main.forms import ProductEntryForm
-from django.conf import settings
 from .models import Product
-from django.core.files.storage import default_storage
 
 from django.http import HttpResponse
 from django.core import serializers
@@ -25,10 +23,6 @@ from django.views.decorators.http import require_POST
 @login_required(login_url='/login')
 def show_model(request):
     products = Product.objects.filter(user=request.user)
-    for product in products:
-        if product.photo:
-            product.photo_url = default_storage.url(product.photo)
-    
     context = {
         'products': products,
         'nama_saya': 'Brenda Po Lok Fahida',
@@ -51,7 +45,7 @@ def create_product_form(request):
         if form.is_valid():
             product_entry = form.save(commit=False)
             product_entry.user = request.user
-            product_entry.save()
+            product_entry.save() 
             return redirect('main:show_model')
     else:
         form = ProductEntryForm()
@@ -130,17 +124,7 @@ def delete_product(request, id):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    
-    # Handle the photo URL
-    photo_url = None
-    if product.photo:
-        photo_url = request.build_absolute_uri(product.photo.url)
-    
-    context = {
-        'product': product,
-        'photo_url': photo_url,
-    }
-    return render(request, 'product_detail.html', context)
+    return render(request, 'product_detail.html', {'product': product}) 
 
 @csrf_exempt
 @require_POST
