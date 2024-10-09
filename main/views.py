@@ -134,12 +134,7 @@ def product_detail(request, product_id):
     # Handle the photo URL
     photo_url = None
     if product.photo:
-        if settings.DEBUG:
-            # Local development
-            photo_url = product.photo.url
-        else:
-            # Production - assuming you're using a cloud storage
-            photo_url = f"{settings.MEDIA_URL}{product.photo}"
+        photo_url = request.build_absolute_uri(product.photo.url)
     
     context = {
         'product': product,
