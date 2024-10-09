@@ -40,10 +40,9 @@ def create_product_form(request):
         print("Form is valid:", form.is_valid())
         if not form.is_valid():
             print("Form errors:", form.errors)
-        print("Files in request:", request.FILES)
-        
+            print("Files in request:", request.FILES)
+
         if form.is_valid():
-            print("Form errors:", form.errors)
             product_entry = form.save(commit=False)
             product_entry.user = request.user
             product_entry.save()
@@ -155,9 +154,12 @@ def add_product_ajax(request):
             stock=stock,
             user=user
         )
+
+        new_product.save() 
+
         if photo:
             new_product.photo = photo
-        new_product.save()
+            new_product.save()
 
         # Return the new product data as JSON
         return HttpResponse(
