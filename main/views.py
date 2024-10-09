@@ -43,6 +43,7 @@ def create_product_form(request):
         print("Files in request:", request.FILES)
         
         if form.is_valid():
+            print("Form errors:", form.errors)
             product_entry = form.save(commit=False)
             product_entry.user = request.user
             product_entry.save()
@@ -163,5 +164,7 @@ def add_product_ajax(request):
             serializers.serialize('json', [new_product]),
             content_type='application/json',
         )
+    
     except Exception as e:
-        return HttpResponse(str(e), status=500)
+            print("Error:", str(e))
+            return HttpResponse(str(e), status=500)
