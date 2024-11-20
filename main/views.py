@@ -10,15 +10,19 @@ from .models import Product
 from django.http import HttpResponse
 from django.core import serializers
 
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+
+from django.http import JsonResponse
+import json
+from django.core import serializers
+from django.contrib.auth.decorators import login_required
+from .models import Product 
 
 @login_required(login_url='/login')
 def show_model(request):
@@ -170,3 +174,65 @@ def add_product_ajax(request):
     except Exception as e:
             print("Error:", str(e))
             return HttpResponse(str(e), status=500)
+
+@csrf_exempt
+@login_required
+def create_product_flutter(request):
+    if request.method == 'POST':
+        try:
+            print("Received request body:", request.body)  # Debug print
+            data = json.loads(request.body)
+            print("Parsed JSON data:", data)  # Debug print
+            
+            fields_data = data.get('fields', {})
+            print("Fields data:", fields_data)  # Debug print
+            
+            new_product = Product.objects.create(
+                name=fields_data['name'],
+                price=int(fields_data['price']),
+                description=fields_data['description'],
+                service=fields_data['service'],
+                experience=fields_data['experience'],
+                rating=fields_data.get('rating', 0),  # Menggunakan get dengan default value
+                stock=int(fields_data['stock']),
+                user=request.user,
+            )
+            
+            # Serialize the created product
+            serialized_product = {
+                "model": "main.product",  # Sesuaikan dengan nama app Django Anda
+                "pk": str(new_product.pk),
+                "fields": {
+                    "name": new_product.name,
+                    "price": new_product.price,
+                    "description": new_product.description,
+                    "service": new_product.service,
+                    "experience": new_product.experience,
+                    "rating": new_product.rating,
+                    "stock": new_product.stock,
+                    "user": new_product.user.id,
+                }
+            }
+            return JsonResponse({
+                "status": "success", 
+                "data": serialized_product
+            }, status=201)
+            
+        except KeyError as e:
+            print("KeyError:", str(e))  # Debug print
+            return JsonResponse({
+                "status": "error",
+                "message": f"Missing field: {str(e)}"
+            }, status=400)
+            
+        except Exception as e:
+            print("Exception:", str(e))  # Debug print
+            return JsonResponse({
+                "status": "error",
+                "message": str(e)
+            }, status=500)
+            
+    return JsonResponse({
+        "status": "error",
+        "message": "Method not allowed"
+    }, status=405)
